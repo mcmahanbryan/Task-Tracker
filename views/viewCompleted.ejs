@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+
+<script> $("#navbarCollapse > ul > li:nth-child(2)").addClass("active") </script>
+
+<div class="container page-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <a href="./modals/addTask" class="add-modal add-task-button btn btn-primary">Add New Task</a>
+            <a href="./tasks" class="add-task-button btn btn-success">View Active</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="scrollable-table col-lg-12">
+    <table class="col-lg-12 task-table">
+        <colgroup>
+            <col span="1" style="width: 51%;">
+            <col span="1" style="width: 10%;">
+            <col span="1" style="width: 12%;">
+            <col span="1" style="width: 12%;">
+            <col span="1" style="width: 12%;">
+            <col span="1" style="width: 3%;">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Task Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Completed Date</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <%if (completedTasks.length > 0){ %>
+                <% completedTasks.forEach(function(row){ %>
+                <tr>
+                    <td><%= row.taskTitle %></td>
+                    <td><%= row.taskType %></td>
+                    <td><%= row.taskStartDisplay %></td> 
+                    <td><%= row.taskEndDisplay %></td>
+                    <td><%= row.taskCompletedDisplay %></td> 
+                    <td> <a href="./modals/editCompletedTask/<%= row.taskID %>/1"
+                        title="View Completed Task"
+                        class="btn btn-success btn-sm edit-completed-modal">
+                        <i class="far fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            <% })}else { %>
+              <tr>
+                <td colspan="6" class="white-text">No Completed Tasks</td>
+              </tr>
+            <% } %>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+
+<!-- Add New Task Modal 
+ -------------------------------------------------->
+<div id="addNewTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.add-modal').on('click', function(e){
+      e.preventDefault();
+      $('#addNewTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>
+
+
+<!-- Edit Completed Task Modal 
+ -------------------------------------------------->
+<div id="editCompletedTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.edit-completed-modal').on('click', function(e){
+      e.preventDefault();
+      $('#editCompletedTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>

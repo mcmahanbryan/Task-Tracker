@@ -1,0 +1,21 @@
+<!-- Delete Task Type Modal 
+ -------------------------------------------------->
+ <form action="/deleteType" method="POST" class="no-margin">
+    <div class="modal-header header no-border">
+      <h5 class="modal-title white-text" id="deleteTypeModalTitle">Delete Task Type</h5>
+        <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body body-color">
+      <input type="number" class="selectedID" name="selectedID" value=<%- typeInfo.typeID %> hidden>
+      <div class="modalFields">
+        <p class="bottom-spacing white-text">Are you sure you want to delete the <strong><%- typeInfo.typeDescription %></strong> task type?</p>
+      </div>
+    </div>
+    <div class="modal-footer footer-color no-border">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </div>
+  </form>
+  

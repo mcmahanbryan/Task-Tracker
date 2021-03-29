@@ -1,0 +1,50 @@
+<!-- Edit Completed Task Modal 
+ -------------------------------------------------->
+ <form class="no-margin">
+    <div class="modal-header header no-border">
+      <h5 class="modal-title white-text" id="editCompletedTaskModalTitle">Completed Task</h5>
+        <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body body-color">
+      <div class="modalFields">
+        <label for="taskTitle">Task Title</label> 
+        </br>
+        <input type="text" class="taskTitle" name="taskTitle" maxlength="100" size="56" disabled value="<%- selectedTask.taskTitle %>">
+      </div>
+      <div class="modalFields input-padding inline">
+        <label for="taskType">Task Type</label>
+        </br>
+        <select name="taskType" disabled>
+        <% activeTypes.forEach(function(row){ %>
+        <option id=<%- row.typeID %> value=<%- row.typeID %>><%- row.typeDescription %></option>
+        <% }) %>
+        </select>
+      </div>
+      <div class="modalFields input-padding inline completedDate">
+        <label for="completedDate">Completed Date</label>
+        <br>
+        <input type="date" disabled name="completedDate" value=<%- selectedTask.completedDate %> pattern="\d{2}-\d{2}-\d{4}">
+      </div>
+      <div class="modalFields inline input-padding">
+        <label for="startDate">Start Date</label>
+        <br>
+        <input type="date" class="startDate" disabled name="startDate" value=<%- selectedTask.taskStart %> pattern="\d{2}-\d{2}-\d{4}">
+      </div>
+      <div class="modalFields inline input-padding">
+        <label for="endDate">End Date</label>
+        <br>
+        <input type="date" class="endDate" disabled name="endDate" value=<%- selectedTask.taskEnd %> pattern="\d{2}-\d{2}-\d{4}">
+      </div>
+      <br>
+      <div class="modalFields">
+        <label for="taskDescription">Task Description</label>
+        <br>
+        <textarea name="taskDescription" class="taskDescription" cols="59" rows="5" maxlength="500" disabled><%- selectedTask.taskDescription %></textarea>
+      </div>
+    </div>
+    <div class="modal-footer footer-color no-border">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+  </form>

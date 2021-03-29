@@ -1,0 +1,445 @@
+a {
+  text-decoration: none;
+  color: blue; 
+}
+body {
+    background-color: rgb(145, 140, 129);
+}
+form label.required:after
+{
+  color: red;
+  content: " *";
+}
+#sideNavDay {
+  padding-top: 2rem;
+}
+.active {
+    color: #fff;
+}
+.add-task-button {
+  margin: 0 0 .4rem 1rem;
+}
+.arrow-button-left {
+  border-style: none; 
+  border-radius: 20%;
+  margin: 0 0 0 3rem;
+}
+.arrow-button-right {
+  border-style: none; 
+  border-radius: 20%;
+  margin: 0 3 0 0rem;
+}
+.arrow-button:hover {
+  color: #3A6294;
+}
+.bad-login {
+  color: red;
+}
+.body-color {
+    background-color: rgb(145, 140, 129);
+}
+.bottom-spacing {
+  padding-bottom: 3rem;
+}
+.calendar-month-title {
+  text-align: center;
+  color: #fff;
+  margin: 0;
+}
+.calendar-table {
+  border: 1px solid;
+  table-layout: auto;
+  width: 100%;
+  height: 32rem;
+  padding: 0;
+  margin-bottom: 10rem;
+}
+.calendar-table td {
+  border: 2px solid;
+  text-align: left; 
+  padding: 0;
+  margin: 0;
+  vertical-align: 0;
+}
+.calendar-table th {
+  position: sticky;
+  height: 32px;
+  border: 2px solid;
+  text-align: center;
+  background-color: #616161;
+  font-weight: 500;
+  color: #fff;
+  border-color: black;
+}
+.calendar-table-row {
+  height: 100px;
+}
+.calendar-day-number {
+  text-align: right; 
+  color: #fff;
+  padding: .2rem;
+  margin-bottom: 0;
+}
+.calendar-task-overflow {
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+  padding: .2rem 0;
+}
+.calendar-task-overflow:hover {
+  background-color: rgba(255, 254, 254, 0.411);
+  cursor: pointer;
+}
+.calendar-task-row-active {
+  text-decoration: none;
+  text-align: left;
+  color: #fff;
+  margin: 0;
+  font-size: small;
+  padding: .1rem 0;
+  display: block;
+}
+.calendar-task-row-active:hover {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  background-color: rgba(255, 254, 254, 0.411);
+}
+.calendar-task-row-complete {
+  text-decoration: none;
+  text-align: left;
+  color: green;
+  margin: 0;
+  font-size: small;
+  padding: .1rem 0;
+  display: block;
+}
+.calendar-task-row-complete:hover {
+  text-decoration: none;
+  color: green;
+  display: block;
+  background-color: rgba(70, 201, 99, 0.411);
+}
+.center-item {
+  margin: 0 auto;
+  width: 130px;
+}
+.close {
+  color: #fff;
+}
+.close:hover {
+  color: #545b62;
+}
+.complete-button-padding {
+  position: absolute;
+  display: inline;
+  left: .8rem;
+}
+.completedDate {
+  margin-left: 3.3rem;
+}
+.delete {
+  background-color: #A41914;
+  color: white;
+  border-color: #A41914;
+  border-style: solid;
+}
+.delete:hover {
+  background-color: #CF0504;
+  border-color: #CF0504;
+}
+.dropdown-background {
+  background-color: rgb(35, 59, 95);
+  color: #fff;
+}
+.edit {
+  background-color: #3A6294;
+  color: white;
+  border-color: #3A6294;
+  border-style: solid;
+}
+.edit:hover {
+  background-color: #589EC4;
+  border-color: #589EC4;
+}
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3.3rem;
+}
+.footer-color {
+    background-color: rgb(65, 82, 105)
+}
+.footer-copyright {
+    text-align: center;
+    padding-top: 1%;
+    color: #fff;
+}
+.header {
+    background-color: rgb(21, 36, 59);
+}
+.header-margin {
+    margin: .5rem 0;
+}
+.index-spacing {
+  margin-top: 5.5rem;
+  padding: 0 5rem;
+}
+.inline {
+  display: inline-block;
+}
+.input-padding {
+  padding: .3rem 2rem .3rem 0;
+}
+.navButton{
+  position: absolute;
+  text-align: center;
+  right: 0;
+  top: 50%;
+  background-color: grey;
+  width: 35px;
+  transition: 0.5s;
+}
+.navButton:hover {
+  background-color: rgb(168, 167, 167);
+}
+.no-margin {
+    margin: 0;
+}
+.no-border {
+    border-width: 0;
+}
+.page-starter {
+    margin-top: 7rem;
+}
+.right-button {
+  padding: 1rem 0 0 21.1rem;
+}
+.scrollable-table {
+  overflow-y: auto;
+  height: 30rem;
+  padding-right: 0;
+}
+.sidenav {
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 4.4rem;
+  bottom: 3.3rem;
+  right: 0;
+  background-color:rgb(39, 53, 71);
+  transition: 0.5s;
+}
+.target {
+  color: #8C1D25;
+}
+.task-table {
+    border: 1px solid;
+    table-layout: auto;
+    width: 100%;
+    padding: 0;
+}
+.task-table td {
+  height: 25px;
+  border: 2px solid;
+  text-align: left; 
+}
+.task-table th {
+  position: sticky;
+  height: 32px;
+  border: 2px solid;
+  text-align: left;
+  background-color: #616161;
+  font-weight: 500;
+  color: #fff;
+  border-color: black;
+  top: 0;
+  z-index: 2;
+}
+.task-table tr:nth-child(odd) td {
+  background-color: #fff;
+}
+.task-table tr:nth-child(even) td {
+  background-color: #e1e1e1;
+}
+.today-title {
+  background-color: transparent;
+  border-left: transparent;
+  border-right: transparent;
+  border-top: transparent;
+  border-bottom: 3px solid;
+  border-bottom-color: #fff;
+  color: #fff;
+}
+.today-bigger-headings {
+  font-size: 1.7rem;
+}
+.today-smaller-headings {
+  font-size: 1rem;
+  padding-left: 1.2rem;
+}
+.today-table {
+  width: 100%;
+}
+.today-table-row:hover {
+  background-color: rgba(255, 254, 254, 0.411);
+  cursor: pointer;
+}
+.today-table-row td {
+  padding-top: .4rem;
+  background-color: transparent !important;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  color: #fff;
+}
+.today-table-sidenav {
+  width: 90%;
+  margin-left: 1.5rem;
+}
+.today-table-sidenav th {
+  background-color: transparent;
+  border-left: transparent;
+  border-right: transparent;
+  border-top: transparent;
+  border-bottom: 3px solid;
+  border-bottom-color: #fff;
+  color: #fff;
+}
+.today-table-row-sidenav a {
+  padding-top: .4rem;
+  background-color: transparent !important;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  color: #fff;
+  text-decoration: none;
+}
+.today-table-row-sidenav:hover {
+  background-color: rgba(255, 254, 254, 0.411);
+}
+.today-table-row-sidenav-completed a {
+  padding-top: .4rem;
+  background-color: transparent !important;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  color: green;
+  text-decoration: none;
+}
+.today-table-row-sidenav-completed:hover {
+  background-color: rgba(102, 153, 113, 0.411);
+}
+.view-change-button {
+  position: absolute;
+  display: inline;
+  right: 0;
+}
+.weather {
+  padding-left: 10%;
+  padding-top: 2.5rem;
+}
+.white-divider::before {
+  content: "";
+  border-right: solid #fff !important;
+  margin-right: 1rem;
+  height: 40%;
+}
+.white-text {
+    color: #fff;
+}
+
+/* This is the css I grabbed from Bootstrap from the floating labels sign-in page.  */
+.form-signin {
+    width: 100%;
+    max-width: 420px;
+    padding: 10rem 5rem 1rem 5rem;
+    margin: auto;
+  }
+  
+  .form-label-group {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .form-label-group > input,
+  .form-label-group > label {
+    height: 3.125rem;
+    padding: .75rem;
+  }
+  
+  .form-label-group > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    margin-bottom: 0; /* Override default `<label>` margin */
+    line-height: 1.5;
+    color: #495057;
+    pointer-events: none;
+    cursor: text; /* Match the input under the label */
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    transition: all .1s ease-in-out;
+  }
+  
+  .form-label-group input::-webkit-input-placeholder {
+    color: transparent;
+  }
+  
+  .form-label-group input:-ms-input-placeholder {
+    color: transparent;
+  }
+  
+  .form-label-group input::-ms-input-placeholder {
+    color: transparent;
+  }
+  
+  .form-label-group input::-moz-placeholder {
+    color: transparent;
+  }
+  
+  .form-label-group input::placeholder {
+    color: transparent;
+  }
+  
+  .form-label-group input:not(:placeholder-shown) {
+    padding-top: 1.25rem;
+    padding-bottom: .25rem;
+  }
+  
+  .form-label-group input:not(:placeholder-shown) ~ label {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    font-size: 12px;
+    color: #777;
+  }
+  
+  /* Fallback for Edge
+  -------------------------------------------------- */
+  @supports (-ms-ime-align: auto) {
+    .form-label-group > label {
+      display: none;
+    }
+    .form-label-group input::-ms-input-placeholder {
+      color: #777;
+    }
+  }
+  
+  /* Fallback for IE
+  -------------------------------------------------- */
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    .form-label-group > label {
+      display: none;
+    }
+    .form-label-group input:-ms-input-placeholder {
+      color: #777;
+    }
+  }

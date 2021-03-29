@@ -1,0 +1,23 @@
+<!-- Edit Task Type Modal 
+ -------------------------------------------------->
+ <form action="/updateType" method="POST" class="no-margin">
+    <div class="modal-header header no-border">
+      <input type="number" name="selectedID" value=<%- selectedType.typeID %> hidden>
+      <h5 class="modal-title white-text" id="updateNewTaskTypeModalTitle">Edit Task Type</h5>
+        <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body body-color">
+      <div class="modalFields">
+        <label for="taskType" class="required">Task Type</label> 
+        </br>
+        <input type="text" name="typeDescription" maxlength="50"  size="50" required value="<%- selectedType.typeDescription %>">
+      </div>
+    </div>
+    <div class="modal-footer footer-color no-border">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+  

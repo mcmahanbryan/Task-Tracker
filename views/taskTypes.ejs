@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+
+<script> $("#navbarCollapse > ul > li:nth-child(4)").addClass("active") </script>
+
+
+<div class="container page-starter">
+    <div class="row">
+        <div class="col-lg-8">
+            <a href="./modals/addType" class="add-modal add-task-button btn btn-primary">Add New Type</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="scrollable-table col-lg-8">
+    <table class="col-lg-8 task-table">
+        <colgroup>
+            <col span="1" style="width: 84%;">
+            <col span="1" style="width: 16%;">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Task Type</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <%if (taskTypes.length > 0){ %>
+                <% taskTypes.forEach(function(row) { %>
+                    <tr>
+                        <td><%= row.typeDescription %></td>
+                        <td> 
+                            <% if(row.custom == 1) {  %>
+                                <a href="./modals/editType/<%= row.typeID %>"
+                                    title="Edit Type"
+                                    class="btn btn-success btn-sm edit-modal">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                                <a href="./modals/deleteType/<%= row.typeID %>"
+                                    title="Delete Type"
+                                    class="btn btn-danger btn-sm delete-modal">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+                <% } %>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+
+<%- include('partials/footer') %>
+
+
+<!-- Add New Task Type Modal 
+ -------------------------------------------------->
+<div id="addNewTaskTypeModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.add-modal').on('click', function(e){
+      e.preventDefault();
+      $('#addNewTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>
+
+
+<!-- Edit Task Type Modal 
+ -------------------------------------------------->
+<div id="editTaskTypeModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.edit-modal').on('click', function(e){
+      e.preventDefault();
+      $('#editTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>
+
+<!-- Delete Task Modal 
+ -------------------------------------------------->
+<div id="deleteTaskTypeModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.delete-modal').on('click', function(e){
+      e.preventDefault();
+      $('#deleteTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>

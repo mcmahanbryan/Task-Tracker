@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<script> $("#navbarCollapse > ul > li:nth-child(4)").addClass("active") </script>
+
+<div class="container">
+    <form action="/updateInfo" method="POST" class="no-margin">
+        <div class="container-fluid page-starter">
+            <div class="inline input-padding">
+                <label for="userName" class="required white-text">Username</label> 
+                </br>
+                <input type="text" name="userName" maxlength="50" required value="<%- userName %>">            
+            </div>
+            <div class="inline input-padding">
+                <label for="password" class="white-text">Password</label> 
+                </br>
+                <input type="text" name="password" maxlength="50">            
+            </div>
+            <br>
+        </div>
+        <div class="col-lg-12 right-button">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </form>
+</div>
+
+
+<%- include('partials/footer') %>

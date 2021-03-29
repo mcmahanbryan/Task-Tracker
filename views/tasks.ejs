@@ -1,0 +1,110 @@
+<%- include('partials/header') %>
+
+<script> $("#navbarCollapse > ul > li:nth-child(2)").addClass("active") </script>
+
+<div class="container page-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <a href="./modals/addTask" class="add-modal add-task-button btn btn-primary">Add New Task</a>
+            <a href="./viewCompleted" class="add-task-button btn btn-success">View Completed</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="scrollable-table col-lg-12">
+    <table class="col-lg-12 task-table">
+        <colgroup>
+            <col span="1" style="width: 40%;">
+            <col span="1" style="width: 10%;">
+            <col span="1" style="width: 15%;">
+            <col span="1" style="width: 15%;">
+            <col span="1" style="width: 10%;">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Task Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <%if (activeTasks.length > 0){ %>
+                <% activeTasks.forEach(function(row){ %>
+                <tr>
+                    <td><%= row.taskTitle %></td>
+                    <td><%= row.taskType %></td>
+                    <td><%= row.taskStartDisplay %></td> 
+                    <td><%= row.taskEndDisplay %></td> 
+                    <td> <a href="./modals/editTask/<%= row.taskID %>/1"
+                        title="Edit Task"
+                        class="btn btn-success btn-sm edit-modal">
+                        <i class="far fa-edit"></i>
+                        </a>
+                        <a href="./modals/deleteTask/<%= row.taskID %>"
+                        title="Delete Task"
+                        class="btn btn-danger btn-sm delete-modal">
+                        <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            <% })}else { %>
+              <tr>
+                <td colspan="6">No Active Tasks</td>
+              </tr>
+            <% } %>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+
+<!-- Add New Task Modal 
+ -------------------------------------------------->
+<div id="addNewTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.add-modal').on('click', function(e){
+      e.preventDefault();
+      $('#addNewTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>
+
+
+<!-- Edit Task Modal 
+ -------------------------------------------------->
+<div id="editTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.edit-modal').on('click', function(e){
+      e.preventDefault();
+      $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>
+
+<!-- Delete Task Modal 
+ -------------------------------------------------->
+<div id="deleteTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+<script>
+$('.delete-modal').on('click', function(e){
+      e.preventDefault();
+      $('#deleteTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>

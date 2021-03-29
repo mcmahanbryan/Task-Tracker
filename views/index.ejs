@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+
+<script>
+  $("#navbarCollapse > ul > li:nth-child(1)").addClass("active");
+</script>
+
+<div class="container-fluid index-spacing">
+  <div class="row">
+    <div class="col-lg-6">
+      <table class="today-table">
+        <colgroup>
+          <col span="1" style="width: 65%" />
+          <col span="1" style="width: 20%" />
+          <col span="1" style="width: 15%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="today-title today-bigger-headings">Today's Tasks</th>
+            <th class="today-title today-smaller-headings">Type</th>
+            <th class="today-title today-smaller-headings">End Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%if (todaysTasks.length > 0){ %> <%
+          todaysTasks.forEach(function(row){ %>
+          <tr
+            class="today-table-row edit-modal"
+            onclick="./modals/editTask/<%= row.taskID %>/0"
+          </tr> 
+            <td>* <%= row.taskTitle %></td>
+            <td class="white-divider"><%= row.typeDescription %></td>
+            <td class="white-divider"><%= row.taskEnd %></td>
+          </tr>
+          <% })}else { %>
+          <tr>
+            <td colspan="3" class="white-text">No Tasks Today</td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <div id="openweathermap-widget-9" class="col-lg-6 weather"></div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<!-- Edit Task Modal 
+    -------------------------------------------------->
+<div
+  id="editTaskModal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+<script>
+  $(".edit-modal").on("click", function (e) {
+    e.preventDefault();
+    $("#editTaskModal")
+      .modal("show")
+      .find(".modal-content")
+      .load($(this).attr("onclick"));
+  });
+</script>
+
+<script>
+  window.myWidgetParam ? window.myWidgetParam : (window.myWidgetParam = []);
+  window.myWidgetParam.push({
+    id: 9,
+    cityid: "4402245",
+    appid: `<%- apiKey %>`,
+    units: "imperial",
+    containerid: "openweathermap-widget-9",
+  });
+  (function () {
+    var script = document.createElement("script");
+    script.async = true;
+    script.charset = "utf-8";
+    script.src =
+      "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(script, s);
+  })();
+</script>

@@ -1,0 +1,284 @@
+<%- include('partials/header') %>
+
+<script> $("#navbarCollapse > ul > li:nth-child(3)").addClass("active") </script>
+
+<div class="container-fluid index-spacing">
+    <div class="col-lg-12 calendar-month-title">
+        <h7><%= viewedYear %></h7>
+    </div>
+        <div class="col-lg-12 row calendar-month-title">
+            <div class="col-lg-4 text-right">
+            <form action="/calendar/previous" method="post" class="inline">
+                <input type="text" name="viewedMonth" value="<%- viewedMonth %>" hidden>
+                <input type="text" name="viewedYear" value="<%- viewedYear %>" hidden>
+                <button type="submit" id="left-arrow" class="arrow-button-left">
+                    <i class="fas fa-arrow-left fa-2x"></i>
+                </button>
+            </form>
+            </div>
+            <div class="col-lg-4">
+            <h2 id="month-name" class="inline"><%= viewedMonth %></h2>
+            </div>
+            <div class="col-lg-4 text-left">
+            <form action="/calendar/next" method="post" class="inline">
+                <input type="text" name="viewedMonth" value="<%- viewedMonth %>" hidden>
+                <input type="text" name="viewedYear" value="<%- viewedYear %>" hidden>
+                <button class="arrow-button-right">
+                    <i class="fas fa-arrow-right fa-2x"></i>
+                </button>
+            </form>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-lg-12">
+            <table class="calendar-table">
+                <colgroup>
+                    <col span="1" style="width: 12%;">
+                    <col span="1" style="width: 12%;">
+                    <col span="1" style="width: 12%;">
+                    <col span="1" style="width: 12%;">
+                    <col span="1" style="width: 12%;">
+                    <col span="1" style="width: 12%;">
+                    <col span="1" style="width: 12%;">
+                </colgroup>
+            <thead>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>        
+            </thead>
+            <tbody id="calendar-body">
+            </tbody>    
+        </table>
+        </div>
+    </div>
+</div>
+<div id="calendarSideNav" class="sidenav">
+    <a onclick="moveNav()" id="navButton" class="navButton openNav"><i class="fas fa-angle-left fa-3x"></i></a>
+    <div id="selectedDayTasks">
+        <h2 class="white-text text-center" id="sideNavDay"></h2>  
+        <div class="scrollable-table">
+            <table class="today-table-sidenav">
+                <colgroup>
+                    <col span="1" style="width: 75%;">
+                    <col span="1" style="width: 25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="today-bigger-headings">Task Title</th>
+                        <th class="today-smaller-headings">Type</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>    
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+
+<!-- Edit Task Modal
+    -------------------------------------------------->
+<div id="editTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Completed Task Modal 
+    -------------------------------------------------->
+<div id="editCompletedTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+    let tasks = JSON.parse(`<%- monthTasks %>`);
+    let dayNumbers = '<%- viewedDays %>'.split(',');
+    let count = 0;
+    const calendar = document.getElementById("calendar-body");
+    
+    for (let week = 1; week <= 6; week++) {
+        let trCreation = document.createElement(`tr`);
+        trCreation.className = `row${week} calendar-table-row`;
+        calendar.appendChild(trCreation);
+
+        for (let day = 1; day <= 7; day++) {
+            let tdCreation = document.createElement(`td`);
+            tdCreation.className = `${dayNumbers[count]}`;
+            trCreation.appendChild(tdCreation);
+
+            let pCreation = document.createElement(`p`);
+            pCreation.className = `calendar-day-number`;
+            pCreation.innerHTML = `${dayNumbers[count]}`;
+            tdCreation.appendChild(pCreation);
+
+            count++;
+        }
+    }
+
+    for (let day = 1; day <= `<%- viewedTotalDays %>`; day++) {
+        let currentDay = document.getElementsByClassName(`${day}`);
+        let dayTaskNumber = currentDay[0].children.length;
+        
+        if(tasks.length == 0) {
+            break;
+        }
+
+        tasks.forEach((element) => { 
+            if (element.taskStart <= day && day <= element.taskEnd) { 
+                if(currentDay[0].children.length < 4) {
+                
+                    let aTask = document.createElement('a');
+                    aTask.title = element.taskTitle;
+
+                    if(element.taskComplete == 0) {
+                        aTask.className = `calendar-task-row-active edit-modal`;
+                        aTask.href = `/modals/editTask/${element.taskID}/1`;
+                    } else {
+                        aTask.className = `calendar-task-row-complete edit-completed-modal`;
+                        aTask.href = `/modals/editCompletedTask/${element.taskID}/1`;
+                    }
+
+                    let title;
+                    if(element.taskTitle.length > 27) {
+                        title = element.taskTitle.slice(0,27) + '...';
+                    } else {
+                        title = element.taskTitle;
+                    }
+                    aTask.innerHTML = `${title}`; 
+                    currentDay[0].appendChild(aTask); 
+                } else if(currentDay[0].children.length == 4) {
+                    let pTask = document.createElement('p');
+                    pTask.className = `calendar-task-overflow`;
+                    pTask.innerHTML = '........';
+                    pTask.title = 'Expand Day';
+                    pTask.id = `<%= viewedMonth %> ${day}`;
+                    pTask.onclick = populateSideNav;
+                    currentDay[0].appendChild(pTask); 
+                } 
+            } 
+        }) 
+    } 
+
+    function moveNav() {
+        const navButton = document.getElementById('navButton');
+        const sideNav = document.getElementById('calendarSideNav');
+
+        if(navButton.classList.contains("closeNav")) {
+            sideNav.style.width = "0";
+            navButton.style.right = "0";
+            navButton.classList.remove("closeNav");
+            navButton.classList.add("openNav");
+            navButton.innerHTML = `<i class="fas fa-angle-left fa-3x"></i>`;
+        } else {
+            sideNav.style.width = "500px";
+            navButton.style.right = "482px";
+            navButton.classList.add("closeNav");
+            navButton.classList.remove("openNav");
+            navButton.innerHTML = `<i class="fas fa-angle-right fa-3x"></i>`;
+        }
+    }
+
+    function populateSideNav(event) {
+        const monthAndDay = event.target.id;
+        const day = event.target.id.split(" ")[1];
+        const sideNavDay = document.getElementById('sideNavDay');
+        const tableBody = document.getElementById('tableBody');
+        const navButton = document.getElementById('navButton');
+        const sideNav = document.getElementById('calendarSideNav');
+        
+        tableBody.textContent = '';
+        sideNavDay.innerHTML = `${monthAndDay}`;
+
+        tasks.forEach((element) => { 
+            if (element.taskStart <= day && day <= element.taskEnd) { 
+                let newRow = document.createElement('tr');
+                let newA1 = document.createElement('a');
+                let newA2 = document.createElement('a');
+
+                if (element.taskComplete == 0) {
+                    newRow.className = `today-table-row-sidenav`;
+                    newA1.href = `/modals/editTask/${element.taskID}/1`;
+                    newA2.href = `/modals/editTask/${element.taskID}/1`;
+                    newA1.className = `edit-modal-sidenav`;
+                    newA2.className = `edit-modal-sidenav`;
+                } else {
+                    newRow.className = `today-table-row-sidenav-completed`;
+                    newA1.href = `/modals/editCompletedTask/${element.taskID}/1`;
+                    newA2.href = `/modals/editCompletedTask/${element.taskID}/1`;
+                    newA1.className = `edit-completed-modal-sidenav`;
+                    newA2.className = `edit-completed-modal-sidenav`;
+                }
+                
+                tableBody.appendChild(newRow);
+
+                let title;
+                if(element.taskTitle.length > 40) {
+                    title = element.taskTitle.slice(0,40) + '...';
+                } else {
+                    title = element.taskTitle;
+                }
+
+                let tdTitle = document.createElement('td');
+                newA1.innerText = `* ${title}`;
+                newRow.appendChild(tdTitle);
+                tdTitle.appendChild(newA1);
+
+
+                let tdType = document.createElement('td');
+                tdType.className = `white-divider`;
+                newA2.innerText = `${element.typeDescription}`;
+                newRow.appendChild(tdType);
+                tdType.appendChild(newA2);
+            }
+        })
+        
+        if(navButton.classList.contains("openNav")) {
+            sideNav.style.width = "500px";
+            navButton.style.right = "482px";
+            navButton.classList.add("closeNav");
+            navButton.innerHTML = `<i class="fas fa-angle-right fa-3x"></i>`;   
+        }
+
+        $('.edit-modal-sidenav').on('click', function(e){
+        e.preventDefault();
+        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+        });
+
+        $('.edit-completed-modal-sidenav').on('click', function(e){
+        e.preventDefault();
+        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+        });
+       
+    }
+
+</script>
+
+<!-- Edit Task Modal Script
+    -------------------------------------------------->
+<script>
+    $('.edit-modal').on('click', function(e){
+      e.preventDefault();
+      $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>
+
+<!-- Edit Completed Task Script
+    -------------------------------------------------->
+<script>
+$('.edit-completed-modal').on('click', function(e){
+      e.preventDefault();
+      $('#editCompletedTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+    });
+</script>

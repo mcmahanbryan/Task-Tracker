@@ -1,0 +1,51 @@
+<!-- Edit Task Modal 
+ -------------------------------------------------->
+ <form action="/updateTask" method="POST" class="no-margin">
+    <div class="modal-header header no-border">
+      <h5 class="modal-title white-text" id="editTaskModalTitle">Edit Task</h5>
+        <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body body-color">
+      <input type="number" name="selectedID" value=<%- selectedTask.taskID %> hidden>
+      <input type="number" name="from" value=<%- selectedTask.from %> hidden>
+      <div class="modalFields">
+        <label for="taskTitle" class="required">Task Title</label> 
+        </br>
+        <input type="text" class="taskTitle" name="taskTitle" maxlength="100" size="56" required value="<%- selectedTask.taskTitle %>">
+      </div>
+      <div class="modalFields input-padding">
+        <label for="taskType" class="required ">Task Type</label>
+        </br>
+        <select name="taskType" required>
+        <% activeTypes.forEach(function(row){ %>
+        <option id=<%- row.typeID %> value=<%- row.typeID %>><%- row.typeDescription %></option>
+        <% }) %>
+        </select>
+      </div>
+      <div class="modalFields inline input-padding">
+        <label for="startDate" class="required">Start Date</label>
+        <br>
+        <input type="date" class="startDate" required name="startDate" value=<%- selectedTask.taskStart %> pattern="\d{2}-\d{2}-\d{4}">
+      </div>
+      <div class="modalFields inline input-padding">
+        <label for="endDate" class="required">End Date</label>
+        <br>
+        <input type="date" class="endDate" required name="endDate" value=<%- selectedTask.taskEnd %> pattern="\d{2}-\d{2}-\d{4}">
+      </div>
+      <br>
+      <div class="modalFields">
+        <label for="taskDescription">Task Description</label>
+        <br>
+        <textarea name="taskDescription" class="taskDescription" cols="59" rows="5" maxlength="500"><%- selectedTask.taskDescription %></textarea>
+      </div>
+    </div>
+    <div class="modal-footer footer-color no-border">
+      <div class="complete-button-padding">
+      <button type="submit" name="complete" class="btn btn-success">Complete</button>
+      </div>
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="submit" name="save" class="btn btn-primary">Save</button>
+    </div>
+  </form>
