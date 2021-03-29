@@ -20,10 +20,10 @@ con.connect((err) => {
 
 /**
  * Gets all of the active tasks for the user from the database.
- * @param {Date} firstDay // Format of YYYY/MM/DD and is the first day of the month.
- * @param {Date} lastDay // Format of YYYY/MM/DD and is the last day of the month.
- * @param {Number} userID // User ID of of the user
- * @returns
+ * @param {Date} firstDay Format of YYYY/MM/DD and is the first day of the month.
+ * @param {Date} lastDay Format of YYYY/MM/DD and is the last day of the month.
+ * @param {Number} userID User ID of the user in the database.
+ * @returns All active tasks for the month.
  */
 function getCalendarActiveTasks(firstDay, lastDay, userID) {
   return new Promise(function (resolve, reject) {
@@ -129,6 +129,12 @@ function getCalendarActiveTasks(firstDay, lastDay, userID) {
   });
 }
 
+/**
+ * Gets the active tasks for a user. Can be used to get completed or uncompleted task.
+ * @param {Number} userID User ID of the user in the database.
+ * @param {Boolean} completed Marks whether you want completed or uncompleted tasks. Defaults to 0 (uncompleted).
+ * @returns Array of active tasks.
+ */
 function getUsersActiveTasks(userID, completed = 0) {
   return new Promise(function (resolve, reject) {
     const activeTasks = [];
