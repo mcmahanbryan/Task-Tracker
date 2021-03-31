@@ -129,6 +129,90 @@ function getCalendarActiveTasks(firstDay, lastDay, userID) {
   });
 }
 
+function getUserTask(taskID, from = 0, completed = 0) {
+  return new Promise(function (resolve, reject) {
+    let selectedTask = {};
+
+    con.query(
+      `SELECT id as task_id, task_title, task_description, task_type_id, DATE_FORMAT(task_start, "%Y-%m-%d") 
+      as task_start, 
+      ${
+        completed
+          ? 'DATE_FORMAT(completed_date, "%Y-%m-%d") as completed_date,'
+          : ""
+      } 
+      DATE_FORMAT(task_end, "%Y-%m-%d") as task_end
+      FROM task WHERE id = ?`,
+      taskID,
+      (err, tasks) => {
+        if (err) {
+          reject(err);
+        }
+
+        tasks.forEach((task) => {
+          const taskID = task.task_id;
+          const taskTitle = task.task_title;
+          const taskDescription = task.task_description;
+          const taskTypeID = task.task_type_id;
+          const taskStart = task.task_start;
+          const taskEnd = task.task_end;
+          const completedDate = completed ? task.completed_date : "";
+
+          selectedTask = {
+            taskID: taskID,
+            taskTitle: taskTitle,
+            taskDescription: taskDescription,
+            taskTypeID: taskTypeID,
+            taskStart: taskStart,
+            taskEnd: taskEnd,
+            completedDate: completedDate,
+            from: from,
+          };
+        });
+
+        resolve(selectedTask);
+      }
+    );
+  });
+}
+
+function updateUserTask(updatedTaskInfo) {
+  return new Promise(function (resolve, reject) {
+    con.query(
+      `UPDATE task SET task_title = ?,  task_description = ?, task_type_id = ?, task_start = ?, task_end = ?,
+      ${updatedTaskInfo.complete ? "completed_date = now()," : ""} 
+       complete = ? WHERE id = ?`,
+      [
+        updatedTaskInfo.title,
+        updatedTaskInfo.taskDescription,
+        updatedTaskInfo.taskType,
+        updatedTaskInfo.startDate,
+        updatedTaskInfo.endDate,
+        updatedTaskInfo.complete,
+        updatedTaskInfo.selectedID,
+      ],
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve();
+      }
+    );
+  });
+}
+function deleteUserTask(taskID) {
+  return new Promise(function (resolve, reject) {
+    con.query(`UPDATE task SET active = 0 WHERE id = ?`, taskID, (err) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve();
+    });
+  });
+}
+
 /**
  * Gets the active tasks for a user. Can be used to get completed or uncompleted task.
  * @param {Number} userID User ID of the user in the database.
@@ -196,7 +280,60 @@ function getUsersActiveTasks(userID, completed = 0) {
   });
 }
 
-function getUsersTodayTasks(userID) {
+function createUser(userName, password) {
+  return new Promise(function (resolve, reject) {
+    con.query(
+      "INSERT INTO user (user_name, password) VALUES (?, ?);",
+      [userName, password],
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve();
+      }
+    );
+  });
+}
+
+function updateUser(userInfo, password = false) {
+  return new Promise(function (resolve, reject) {
+    if (password) {
+      con.query(
+        `UPDATE user SET user_name = ?, password = ? WHERE id = ?`,
+        [userInfo.userName, userInfo.password, userInfo.userID],
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+          console.log(userInfo);
+          resolve();
+        }
+      );
+    }
+
+    if (!password) {
+      con.query(
+        `UPDATE user SET user_name = ? WHERE id = ?`,
+        [userInfo.userName, userInfo.userID],
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+
+          resolve();
+        }
+      );
+    }
+  });
+}
+
+/**
+ * Gets the user's tasks for the current day.
+ * @param {Number} userID User ID of the user in the database.
+ * @returns An array of the tasks for the current date for the user
+ */
+async function getUsersTodayTasks(userID) {
   return new Promise(function (resolve, reject) {
     const todaysTasks = [];
 
@@ -235,6 +372,11 @@ function getUsersTodayTasks(userID) {
   });
 }
 
+/**
+ * Gets the default task types and the user's custom types.
+ * @param {Number} userID User ID of the user in the database.
+ * @returns An array of all the user's available task types.
+ */
 function getTaskTypes(userID) {
   return new Promise(function (resolve, reject) {
     const activeTaskTypes = [];
@@ -270,33 +412,137 @@ function getTaskTypes(userID) {
   });
 }
 
-function getAllUsers() {
+function getTaskType(typeID) {
   return new Promise(function (resolve, reject) {
-    const foundUsers = [];
+    let typeInfo = {};
+    con.query(
+      "SELECT id, type_description FROM task_type WHERE id = ?",
+      typeID,
+      (err, taskType) => {
+        if (err) {
+          reject(err);
+        }
+        taskType.forEach((type) => {
+          const typeID = type.id;
+          const typeDescription = type.type_description;
 
+          typeInfo = {
+            typeID: typeID,
+            typeDescription: typeDescription,
+          };
+        });
+
+        resolve(typeInfo);
+      }
+    );
+  });
+}
+
+function createTaskType(typeInfo) {
+  return new Promise(function (resolve, reject) {
+    con.query("INSERT INTO task_type SET ?", typeInfo, (err) => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+function updateTaskType(selectedTypeID, typeDescription) {
+  return new Promise(function (resolve, reject) {
+    con.query(
+      "UPDATE task_type SET type_description = ? WHERE id = ?",
+      [typeDescription, selectedTypeID],
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve();
+      }
+    );
+  });
+}
+
+function deleteTaskType(selectedTypeID) {
+  return new Promise(function (resolve, reject) {
+    con.query(
+      `UPDATE task_type SET active = 0 WHERE id = ?`,
+      selectedTypeID,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve();
+      }
+    );
+  });
+}
+
+/**
+ * Inserts a new task into the database.
+ * @param {Object} newTask An object with all of the new task information.
+ * @returns N/A
+ */
+function createNewTask(newTask) {
+  return new Promise(function (resolve, reject) {
+    con.query("INSERT INTO task SET ?", newTask, (err) => {
+      if (err) reject(err);
+    });
+
+    resolve();
+  });
+}
+
+/**
+ *
+ * @param {*} requiredInfo
+ * @returns
+ */
+const getAllUsers = async function (requiredInfo = "all") {
+  return new Promise(function (resolve, reject) {
+    const listOfUsers = [];
     con.query(
       "SELECT id, user_name, password FROM user WHERE active = 1",
       (err, users) => {
-        if (err) console.log(err);
+        if (err) reject(err);
 
         users.forEach((user) => {
-          foundUsers.push({
-            userID: user.id,
-            userName: user.user_name,
-            password: user.password,
-          });
+          if (requiredInfo === "all") {
+            listOfUsers.push({
+              userID: user.id,
+              userName: user.user_name,
+              password: user.password,
+            });
+          }
+
+          if (requiredInfo === "userName") {
+            listOfUsers.push(user.user_id);
+          }
         });
       }
     );
 
-    resolve(foundUsers);
+    resolve(listOfUsers);
   });
-}
+};
 
 module.exports = {
   getCalendarActiveTasks: getCalendarActiveTasks,
   getUsersActiveTasks: getUsersActiveTasks,
   getUsersTodayTasks: getUsersTodayTasks,
+  getUserTask: getUserTask,
+  updateUserTask: updateUserTask,
+  deleteUserTask: deleteUserTask,
   getTaskTypes: getTaskTypes,
+  getTaskType: getTaskType,
+  updateTaskType: updateTaskType,
+  createTaskType: createTaskType,
+  createNewTask: createNewTask,
+  deleteTaskType: deleteTaskType,
   getAllUsers: getAllUsers,
+  createUser: createUser,
+  updateUser: updateUser,
 };

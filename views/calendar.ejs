@@ -120,7 +120,7 @@
 
             let pCreation = document.createElement(`p`);
             pCreation.className = `calendar-day-number`;
-            pCreation.innerHTML = `${dayNumbers[count]}`;
+            pCreation.innerText = `${dayNumbers[count]}`;
             tdCreation.appendChild(pCreation);
 
             count++;
@@ -161,7 +161,7 @@
                 } else if(currentDay[0].children.length == 4) {
                     let pTask = document.createElement('p');
                     pTask.className = `calendar-task-overflow`;
-                    pTask.innerHTML = '........';
+                    pTask.innerText = '........';
                     pTask.title = 'Expand Day';
                     pTask.id = `<%= viewedMonth %> ${day}`;
                     pTask.onclick = populateSideNav;
