@@ -131,7 +131,7 @@
         let currentDay = document.getElementsByClassName(`${day}`);
         let dayTaskNumber = currentDay[0].children.length;
         
-        if(tasks.length == 0) {
+        if(tasks.length === 0) {
             break;
         }
 
@@ -142,7 +142,7 @@
                     let aTask = document.createElement('a');
                     aTask.title = element.taskTitle;
 
-                    if(element.taskComplete == 0) {
+                    if(element.taskComplete === 0) {
                         aTask.className = `calendar-task-row-active edit-modal`;
                         aTask.href = `/modals/editTask/${element.taskID}/1`;
                     } else {
@@ -158,7 +158,7 @@
                     }
                     aTask.innerHTML = `${title}`; 
                     currentDay[0].appendChild(aTask); 
-                } else if(currentDay[0].children.length == 4) {
+                } else if(currentDay[0].children.length === 4) {
                     let pTask = document.createElement('p');
                     pTask.className = `calendar-task-overflow`;
                     pTask.innerText = '........';
