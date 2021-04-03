@@ -8,12 +8,12 @@
         </button>
     </div>
     <div class="modal-body body-color">
-      <input type="number" name="selectedID" value=<%- selectedTask.taskID %> hidden>
-      <input type="number" name="from" value=<%- selectedTask.from %> hidden>
+      <input type="number" name="selectedID" value="<%- selectedTask.taskID %>" hidden>
+      <input type="number" name="from" value="<%- selectedTask.from %>" hidden>
       <div class="modalFields">
         <label for="taskTitle" class="required">Task Title</label> 
         </br>
-        <input type="text" class="taskTitle" name="taskTitle" maxlength="100" size="56" required value="<%- selectedTask.taskTitle %>">
+        <input type="text" class="taskTitle" name="taskTitle" maxlength="100" size="56" required value=<%- selectedTask.taskTitle %>>
       </div>
       <div class="modalFields input-padding">
         <label for="taskType" class="required ">Task Type</label>
@@ -27,12 +27,12 @@
       <div class="modalFields inline input-padding">
         <label for="startDate" class="required">Start Date</label>
         <br>
-        <input type="date" class="startDate" required name="startDate" value=<%- selectedTask.taskStart %> pattern="\d{2}-\d{2}-\d{4}">
+        <input type="date" class="startDate" required name="startDate" value="<%- selectedTask.taskStart %>" pattern="\d{2}-\d{2}-\d{4}">
       </div>
       <div class="modalFields inline input-padding">
         <label for="endDate" class="required">End Date</label>
         <br>
-        <input type="date" class="endDate" required name="endDate" value=<%- selectedTask.taskEnd %> pattern="\d{2}-\d{2}-\d{4}">
+        <input type="date" class="endDate" required name="endDate" value="<%- selectedTask.taskEnd %>" pattern="\d{2}-\d{2}-\d{4}">
       </div>
       <br>
       <div class="modalFields">

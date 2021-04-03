@@ -22,8 +22,6 @@ con.connect((err) => {
  */
 function getTaskTypes(userID) {
   return new Promise(function (resolve, reject) {
-    const activeTaskTypes = [];
-
     con.query(
       `SELECT id, type_description, active, custom, user_id
       FROM task_type
@@ -35,52 +33,7 @@ function getTaskTypes(userID) {
           reject(err);
         }
 
-        taskTypes.forEach((type) => {
-          const typeID = type.id;
-          const typeDescription = type.type_description;
-          const custom = type.custom;
-
-          typeInfo = {
-            typeID: typeID,
-            typeDescription: typeDescription,
-            custom: custom,
-          };
-
-          activeTaskTypes.push(typeInfo);
-        });
-
-        resolve(activeTaskTypes);
-      }
-    );
-  });
-}
-
-/**
- * Gets a specific task type.
- * @param {Number} typeID The database id of the task type.
- * @returns An object with the type information (id and description).
- */
-function getTaskType(typeID) {
-  return new Promise(function (resolve, reject) {
-    let typeInfo = {};
-    con.query(
-      "SELECT id, type_description FROM task_type WHERE id = ?",
-      typeID,
-      (err, taskType) => {
-        if (err) {
-          reject(err);
-        }
-        taskType.forEach((type) => {
-          const typeID = type.id;
-          const typeDescription = type.type_description;
-
-          typeInfo = {
-            typeID: typeID,
-            typeDescription: typeDescription,
-          };
-        });
-
-        resolve(typeInfo);
+        resolve(taskTypes);
       }
     );
   });
@@ -147,7 +100,6 @@ function deleteTaskType(selectedTypeID) {
 
 module.exports = {
   getTaskTypes: getTaskTypes,
-  getTaskType: getTaskType,
   updateTaskType: updateTaskType,
   createTaskType: createTaskType,
   deleteTaskType: deleteTaskType,

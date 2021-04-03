@@ -21,14 +21,14 @@
           </tr>
         </thead>
         <tbody>
-          <%if (todaysTasks.length > 0){ %> <%
-          todaysTasks.forEach(function(row){ %>
+          <%if (todaysTasks.length > 0){ %> 
+            <%todaysTasks.forEach(function(row){ %>
           <tr
             class="today-table-row edit-modal"
             onclick="./modals/editTask/<%= row.taskID %>/0"
           </tr> 
             <td>* <%= row.taskTitle %></td>
-            <td class="white-divider"><%= row.typeDescription %></td>
+            <td class="white-divider"><%= row.taskType %></td>
             <td class="white-divider"><%= row.taskEnd %></td>
           </tr>
           <% })}else { %>

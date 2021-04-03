@@ -23,48 +23,28 @@ con.connect((err) => {
  * @param {Number} completed Mark whether you want a completed task or not, it defaults to 0.
  * @returns An object of the task.
  */
-function getUserTask(taskID, from = 0, completed = 0) {
+function getUserTask(taskID, completed = 0) {
   return new Promise(function (resolve, reject) {
-    let selectedTask = {};
-
     con.query(
-      `SELECT id as task_id, task_title, task_description, task_type_id, DATE_FORMAT(task_start, "%Y-%m-%d") 
-        as task_start, 
-        ${
-          completed
-            ? 'DATE_FORMAT(completed_date, "%Y-%m-%d") as completed_date,'
-            : ""
-        } 
-        DATE_FORMAT(task_end, "%Y-%m-%d") as task_end
-        FROM task WHERE id = ?`,
+      `SELECT t.id as task_id, t.task_title, t.task_description, t.task_type_id, DATE_FORMAT(t.task_start, "%Y-%m-%d") 
+      as task_start, DATE_FORMAT(t.task_end, "%Y-%m-%d") as task_end, DATE_FORMAT(t.task_start, "%m/%d/%Y") as task_start_display, 
+      DATE_FORMAT(t.task_end, "%m/%d/%Y") as task_end_display, 
+      ${
+        completed
+          ? 'DATE_FORMAT(t.completed_date, "%m/%d/%Y") as completed_date_display,'
+          : ""
+      } 
+      tt.type_description
+      FROM task t
+      JOIN task_type tt ON tt.id = t.task_type_id
+       WHERE t.id = ?`,
       taskID,
       (err, tasks) => {
         if (err) {
           reject(err);
         }
 
-        tasks.forEach((task) => {
-          const taskID = task.task_id;
-          const taskTitle = task.task_title;
-          const taskDescription = task.task_description;
-          const taskTypeID = task.task_type_id;
-          const taskStart = task.task_start;
-          const taskEnd = task.task_end;
-          const completedDate = completed ? task.completed_date : "";
-
-          selectedTask = {
-            taskID: taskID,
-            taskTitle: taskTitle,
-            taskDescription: taskDescription,
-            taskTypeID: taskTypeID,
-            taskStart: taskStart,
-            taskEnd: taskEnd,
-            completedDate: completedDate,
-            from: from,
-          };
-        });
-
-        resolve(selectedTask);
+        resolve(tasks);
       }
     );
   });
@@ -126,8 +106,6 @@ function deleteUserTask(taskID) {
  */
 function getUsersActiveTasks(userID, completed = 0) {
   return new Promise(function (resolve, reject) {
-    const activeTasks = [];
-
     con.query(
       `SELECT t.id as task_id, t.task_title, t.task_description, t.task_type_id, DATE_FORMAT(t.task_start, "%Y-%m-%d") 
       as task_start, DATE_FORMAT(t.task_end, "%Y-%m-%d") as task_end, DATE_FORMAT(t.task_start, "%m/%d/%Y") as task_start_display, 
@@ -147,39 +125,7 @@ function getUsersActiveTasks(userID, completed = 0) {
           reject(err);
         }
 
-        tasks.forEach((task) => {
-          const taskID = task.task_id;
-          const taskTitle = task.task_title;
-          const taskDescription = task.task_description;
-          const taskTypeID = task.task_type_id;
-          const taskStart = task.task_start;
-          const taskEnd = task.task_end;
-          const taskStartDisplay = task.task_start_display;
-          const taskEndDisplay = task.task_end_display;
-          const taskType = task.type_description;
-          const completedDateDisplay = task.completed_date_display
-            ? task.completed_date_display
-            : null;
-
-          taskInfo = {
-            taskID: taskID,
-            taskTitle: taskTitle,
-            taskDescription: taskDescription,
-            taskTypeID: taskTypeID,
-            taskStart: taskStart,
-            taskEnd: taskEnd,
-            taskStartDisplay: taskStartDisplay,
-            taskEndDisplay: taskEndDisplay,
-            taskType: taskType,
-            taskCompletedDisplay: completedDateDisplay
-              ? completedDateDisplay
-              : null,
-          };
-
-          activeTasks.push(taskInfo);
-        });
-
-        resolve(activeTasks);
+        resolve(tasks);
       }
     );
   });
@@ -190,10 +136,8 @@ function getUsersActiveTasks(userID, completed = 0) {
  * @param {Number} userID User ID of the user in the database.
  * @returns An array of the tasks for the current date for the user
  */
-async function getUsersTodayTasks(userID) {
+async function getUsersTodayTasks(userID, completed = 0) {
   return new Promise(function (resolve, reject) {
-    const todaysTasks = [];
-
     con.query(
       `SELECT t.id as task_id, t.task_title, DATE_FORMAT(t.task_end, "%m/%d/%Y") as task_end, tt.type_description FROM task t
       JOIN task_type tt ON tt.id = t.task_type_id
@@ -207,23 +151,7 @@ async function getUsersTodayTasks(userID) {
           reject(err);
         }
 
-        tasks.forEach((task) => {
-          const taskID = task.task_id;
-          const taskTitle = task.task_title;
-          const typeDescription = task.type_description;
-          const taskEnd = task.task_end;
-
-          taskInfo = {
-            taskID: taskID,
-            taskTitle: taskTitle,
-            typeDescription: typeDescription,
-            taskEnd: taskEnd,
-          };
-
-          todaysTasks.push(taskInfo);
-        });
-
-        resolve(todaysTasks);
+        resolve(tasks);
       }
     );
   });

@@ -9,19 +9,23 @@ const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
 const dateFormat = require("./js/date-format");
-const calendarFunctions = require("./js/calendar-functions");
 
 // SQL Query Files
-const calendarQueries = require("./queries/calendar-queries");
-const taskQueries = require("./queries/task-queries");
-const taskTypeQueries = require("./queries/task-type-queries");
-const userQueries = require("./queries/user-queries");
+const calendarQueries = require("./queries/calendar");
+const taskQueries = require("./queries/task");
+const taskTypeQueries = require("./queries/task-type");
+const userQueries = require("./queries/user");
+
+// Models
+const calendarModel = require("./models/calendar");
+const taskTypeModel = require("./models/task-type");
+const userModel = require("./models/user");
+const taskModel = require("./models/task");
 
 //Passport setup
 const initializePassport = require("./js/passport-config");
 const { checkAuthentication } = require("./js/user-authentication");
 const { checkNoAuthentication } = require("./js/user-authentication");
-const { getAllUsers } = require("./queries/user-queries");
 
 // Express Setup
 const app = express();
@@ -51,7 +55,8 @@ app.use(
 ------------------------------------------------*/
 app.get("/", checkNoAuthentication, async function (req, res) {
   res.render("login");
-  const foundUsers = await getAllUsers();
+  const data = await userQueries.getAllUsers();
+  const foundUsers = userModel.createUserObjects(data);
 
   initializePassport(
     passport,
@@ -80,7 +85,8 @@ app.post("/register", checkNoAuthentication, async function (req, res) {
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const userName = req.body.userName;
 
-  const usersList = getAllUsers("userName");
+  const data = await userQueries.getAllUsers();
+  const usersList = userModel.createUserObjects(data, "userName");
 
   if (usersList.includes(userName)) {
     res.redirect("./register");
@@ -93,7 +99,8 @@ app.post("/register", checkNoAuthentication, async function (req, res) {
 /* Home Page
 ------------------------------------------------*/
 app.get("/dashboard", checkAuthentication, async function (req, res) {
-  const todaysTasks = await taskQueries.getUsersTodayTasks(req.user.userID);
+  const data = await taskQueries.getUsersTodayTasks(req.user.userID);
+  const todaysTasks = taskModel.createTaskObjects(data);
 
   res.render("index", {
     todaysTasks: todaysTasks,
@@ -104,21 +111,21 @@ app.get("/dashboard", checkAuthentication, async function (req, res) {
 /* Tasks Page
 ------------------------------------------------*/
 app.get("/tasks", checkAuthentication, async function (req, res) {
-  const activeTasks = await taskQueries.getUsersActiveTasks(req.user.userID);
+  const data = await taskQueries.getUsersActiveTasks(req.user.userID);
+  const activeTasks = taskModel.createTaskObjects(data);
 
-  res.render("tasks", { dateFormat: dateFormat, activeTasks: activeTasks });
+  res.render("tasks", {
+    activeTasks: activeTasks,
+  });
 });
 
 /* View Completed Tasks Page
 ------------------------------------------------*/
 app.get("/viewCompleted", checkAuthentication, async function (req, res) {
-  const completedTasks = await taskQueries.getUsersActiveTasks(
-    req.user.userID,
-    1
-  );
+  const data = await taskQueries.getUsersActiveTasks(req.user.userID, 1);
+  const completedTasks = taskModel.createTaskObjects(data);
 
   res.render("viewCompleted", {
-    dateFormat: dateFormat,
     completedTasks: completedTasks,
   });
 });
@@ -126,7 +133,8 @@ app.get("/viewCompleted", checkAuthentication, async function (req, res) {
 /* Add Task Modal
 ------------------------------------------------*/
 app.get("/modals/addTask", checkAuthentication, async function (req, res) {
-  const activeTypes = await taskTypeQueries.getTaskTypes(req.user.userID);
+  const data = await taskTypeQueries.getTaskTypes(req.user.userID);
+  const activeTypes = taskTypeModel.createTypeObjects(data);
 
   res.render("modals/addTask", {
     dateFormat: dateFormat,
@@ -165,20 +173,19 @@ app.get(
     const selectedTaskID = req.params.taskID;
     const from = req.params.from;
 
-    let activeTypes = await taskTypeQueries.getTaskTypes(req.user.userID);
-    const selectedTask = await taskQueries.getUserTask(selectedTaskID, from);
+    const typeData = await taskTypeQueries.getTaskTypes(req.user.userID);
+    const activeTypes = taskTypeModel.createTypeObjects(typeData);
+    const taskData = await taskQueries.getUserTask(selectedTaskID);
+    const selectedTask = taskModel.createTaskObjects(taskData)[0];
+    selectedTask.from = from;
 
-    // Taking the task's existing type and moving it to the top of the list because I could not
-    // find a better way to do it while loading the modal and setting the existing type as selected.
-    const matchingIndex = activeTypes.findIndex(
-      (type) => type.typeID == selectedTask.taskTypeID
+    const typesList = taskTypeModel.moveSelectedTaskToTop(
+      activeTypes,
+      selectedTask.taskTypeID
     );
-    let removedType = activeTypes.splice(matchingIndex, 1);
-    activeTypes = removedType.concat(activeTypes);
 
     res.render("modals/editTask", {
-      dateFormat: dateFormat,
-      activeTypes: activeTypes,
+      activeTypes: typesList,
       selectedTask: selectedTask,
     });
   }
@@ -193,20 +200,19 @@ app.get(
     const selectedTaskID = req.params.taskID;
     const from = req.params.from;
 
-    let activeTypes = await taskTypeQueries.getTaskTypes(req.user.userID);
-    const selectedTask = await taskQueries.getUserTask(selectedTaskID, from, 1);
+    const typeData = await taskTypeQueries.getTaskTypes(req.user.userID);
+    const activeTypes = taskTypeModel.createTypeObjects(typeData);
+    const taskData = await taskQueries.getUserTask(selectedTaskID, 1);
+    const selectedTask = taskModel.createTaskObjects(taskData)[0];
+    selectedTask.from = from;
 
-    // Taking the task's existing type and moving it to the top of the list because I could not
-    // find a better way to do it while loading the modal and setting the existing type as selected.
-    const matchingIndex = activeTypes.findIndex(
-      (type) => type.typeID == selectedTask.taskTypeID
+    const typesList = taskTypeModel.moveSelectedTaskToTop(
+      activeTypes,
+      selectedTask.taskTypeID
     );
-    let removedType = activeTypes.splice(matchingIndex, 1);
-    activeTypes = removedType.concat(activeTypes);
 
     res.render("modals/editCompletedTask", {
-      dateFormat: dateFormat,
-      activeTypes: activeTypes,
+      activeTypes: typesList,
       selectedTask: selectedTask,
     });
   }
@@ -243,7 +249,8 @@ app.get(
   async function (req, res) {
     const selectedTaskID = req.params.taskID;
 
-    const taskInfo = await taskQueries.getUserTask(selectedTaskID);
+    const data = await taskQueries.getUserTask(selectedTaskID);
+    const taskInfo = taskModel.createTaskObjects(data)[0];
 
     res.render("modals/deleteTask", { taskInfo: taskInfo });
   }
@@ -260,14 +267,20 @@ app.post("/deleteTask", checkAuthentication, async function (req, res) {
 /* Calender
 ------------------------------------------------*/
 app.get("/calendar", checkAuthentication, async function (req, res) {
-  const viewed = calendarFunctions.currentDate();
+  const viewed = calendarModel.currentDate();
   const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
   const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
 
-  const monthTasks = await calendarQueries.getCalendarActiveTasks(
+  const data = await calendarQueries.getCalendarActiveTasks(
     firstDay,
     lastDay,
     req.user.userID
+  );
+
+  const monthTasks = calendarModel.getCalendarMonthTasks(
+    firstDay,
+    lastDay,
+    data
   );
 
   res.render("calendar", {
@@ -282,14 +295,20 @@ app.get("/calendar", checkAuthentication, async function (req, res) {
 app.post("/calendar/previous", checkAuthentication, async function (req, res) {
   const currentMonth = req.body.viewedMonth;
   const currentYear = req.body.viewedYear;
-  const viewed = calendarFunctions.previous(currentMonth, currentYear);
+  const viewed = calendarModel.previous(currentMonth, currentYear);
   const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
   const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
 
-  const monthTasks = await calendarQueries.getCalendarActiveTasks(
+  const data = await calendarQueries.getCalendarActiveTasks(
     firstDay,
     lastDay,
     req.user.userID
+  );
+
+  const monthTasks = calendarModel.getCalendarMonthTasks(
+    firstDay,
+    lastDay,
+    data
   );
 
   res.render("calendar", {
@@ -304,14 +323,20 @@ app.post("/calendar/previous", checkAuthentication, async function (req, res) {
 app.post("/calendar/next", checkAuthentication, async function (req, res) {
   const currentMonth = req.body.viewedMonth;
   const currentYear = req.body.viewedYear;
-  const viewed = calendarFunctions.next(currentMonth, currentYear);
+  const viewed = calendarModel.next(currentMonth, currentYear);
   const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
   const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
 
-  const monthTasks = await calendarQueries.getCalendarActiveTasks(
+  const data = await calendarQueries.getCalendarActiveTasks(
     firstDay,
     lastDay,
     req.user.userID
+  );
+
+  const monthTasks = calendarModel.getCalendarMonthTasks(
+    firstDay,
+    lastDay,
+    data
   );
 
   res.render("calendar", {
@@ -358,9 +383,10 @@ app.post("/updateInfo", checkAuthentication, async function (req, res) {
 /* Task Types
 ------------------------------------------------*/
 app.get("/taskTypes", checkAuthentication, async function (req, res) {
-  const taskTypes = await taskTypeQueries.getTaskTypes(req.user.userID);
+  const data = await taskTypeQueries.getTaskTypes(req.user.userID);
+  const activeTypes = taskTypeModel.createTypeObjects(data);
 
-  res.render("taskTypes", { taskTypes: taskTypes });
+  res.render("taskTypes", { taskTypes: activeTypes });
 });
 
 /* Add Task Type Modal
@@ -391,7 +417,8 @@ app.get(
   async function (req, res) {
     const selectedTypeID = req.params.typeID;
 
-    const selectedType = await taskTypeQueries.getTaskType(selectedTypeID);
+    const data = await taskTypeQueries.getTaskTypes(req.user.userID);
+    const selectedType = data.find((type) => type.id === +selectedTypeID);
 
     res.render("modals/editType", { selectedType: selectedType });
   }
@@ -414,7 +441,8 @@ app.get(
   async function (req, res) {
     const selectedTypeID = req.params.typeID;
 
-    const typeInfo = await taskTypeQueries.getTaskType(selectedTypeID);
+    const data = await taskTypeQueries.getTaskTypes(req.user.userID);
+    const typeInfo = data.find((type) => type.id === +selectedTypeID);
 
     res.render("modals/deleteType", { typeInfo: typeInfo });
   }
