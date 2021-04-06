@@ -12,9 +12,6 @@ const dateFormat = require("./js/date-format");
 
 // SQL Query Files
 const calendarQueries = require("./queries/calendar");
-const taskQueries = require("./queries/task");
-const taskTypeQueries = require("./queries/task-type");
-const userQueries = require("./queries/user");
 
 // Models
 const calendarModel = require("./models/calendar");
@@ -54,15 +51,16 @@ app.use(
 /* Login
 ------------------------------------------------*/
 app.get("/", checkNoAuthentication, async function (req, res) {
-  res.render("login");
-  const data = await userQueries.getAllUsers();
-  const foundUsers = userModel.createUserObjects(data);
+  await userModel.loadAllUsers();
+  const foundUsers = userModel.state.users;
 
   initializePassport(
     passport,
     (userName) => foundUsers.find((user) => user.userName === userName),
     (id) => foundUsers.find((user) => user.userID === id)
   );
+
+  res.render("login");
 });
 
 app.post(
@@ -85,13 +83,13 @@ app.post("/register", checkNoAuthentication, async function (req, res) {
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const userName = req.body.userName;
 
-  const data = await userQueries.getAllUsers();
-  const usersList = userModel.createUserObjects(data, "userName");
+  userModel.loadAllUsers("userName");
+  const usersList = userModel.state.users;
 
   if (usersList.includes(userName)) {
     res.redirect("./register");
   } else {
-    await userQueries.createUser(userName, hashedPassword);
+    await userModel.createNewUser(userName, hashedPassword);
     res.redirect("./");
   }
 });
@@ -99,8 +97,8 @@ app.post("/register", checkNoAuthentication, async function (req, res) {
 /* Home Page
 ------------------------------------------------*/
 app.get("/dashboard", checkAuthentication, async function (req, res) {
-  const data = await taskQueries.getUsersTodayTasks(req.user.userID);
-  const todaysTasks = taskModel.createTaskObjects(data);
+  await taskModel.loadUsersTodayTasks(req.user.userID);
+  const todaysTasks = taskModel.state.tasks;
 
   res.render("index", {
     todaysTasks: todaysTasks,
@@ -111,8 +109,8 @@ app.get("/dashboard", checkAuthentication, async function (req, res) {
 /* Tasks Page
 ------------------------------------------------*/
 app.get("/tasks", checkAuthentication, async function (req, res) {
-  const data = await taskQueries.getUsersActiveTasks(req.user.userID);
-  const activeTasks = taskModel.createTaskObjects(data);
+  await taskModel.loadUsersActiveTasks(req.user.userID);
+  const activeTasks = taskModel.state.tasks;
 
   res.render("tasks", {
     activeTasks: activeTasks,
@@ -122,8 +120,8 @@ app.get("/tasks", checkAuthentication, async function (req, res) {
 /* View Completed Tasks Page
 ------------------------------------------------*/
 app.get("/viewCompleted", checkAuthentication, async function (req, res) {
-  const data = await taskQueries.getUsersActiveTasks(req.user.userID, 1);
-  const completedTasks = taskModel.createTaskObjects(data);
+  await taskModel.loadUsersActiveTasks(req.user.userID, 1);
+  const completedTasks = taskModel.state.tasks;
 
   res.render("viewCompleted", {
     completedTasks: completedTasks,
@@ -133,8 +131,8 @@ app.get("/viewCompleted", checkAuthentication, async function (req, res) {
 /* Add Task Modal
 ------------------------------------------------*/
 app.get("/modals/addTask", checkAuthentication, async function (req, res) {
-  const data = await taskTypeQueries.getTaskTypes(req.user.userID);
-  const activeTypes = taskTypeModel.createTypeObjects(data);
+  await taskTypeModel.loadTaskTypes(req.user.userID);
+  const activeTypes = taskTypeModel.state.taskTypes;
 
   res.render("modals/addTask", {
     dateFormat: dateFormat,
@@ -150,7 +148,7 @@ app.post("/submitTask", checkAuthentication, async function (req, res) {
   const endDate = req.body.endDate;
   const createdBy = req.user.userID;
 
-  taskInfo = {
+  const taskInfo = {
     task_title: title,
     task_description: taskDescription,
     task_type_id: taskType,
@@ -159,7 +157,7 @@ app.post("/submitTask", checkAuthentication, async function (req, res) {
     created_by: createdBy,
   };
 
-  await taskQueries.createNewTask(taskInfo);
+  await taskModel.createNewTask(taskInfo);
 
   res.redirect("tasks");
 });
@@ -173,19 +171,17 @@ app.get(
     const selectedTaskID = req.params.taskID;
     const from = req.params.from;
 
-    const typeData = await taskTypeQueries.getTaskTypes(req.user.userID);
-    const activeTypes = taskTypeModel.createTypeObjects(typeData);
-    const taskData = await taskQueries.getUserTask(selectedTaskID);
-    const selectedTask = taskModel.createTaskObjects(taskData)[0];
+    await taskModel.loadUserTask(selectedTaskID);
+    const selectedTask = taskModel.state.selectedTask;
     selectedTask.from = from;
 
-    const typesList = taskTypeModel.moveSelectedTaskToTop(
-      activeTypes,
-      selectedTask.taskTypeID
-    );
+    await taskTypeModel.loadTaskTypes(req.user.userID);
+    taskTypeModel.loadSelectedType(selectedTask.taskTypeID);
+    taskTypeModel.moveSelectedTaskToTop();
+    const activeTypes = taskTypeModel.state.taskTypes;
 
     res.render("modals/editTask", {
-      activeTypes: typesList,
+      activeTypes: activeTypes,
       selectedTask: selectedTask,
     });
   }
@@ -200,19 +196,17 @@ app.get(
     const selectedTaskID = req.params.taskID;
     const from = req.params.from;
 
-    const typeData = await taskTypeQueries.getTaskTypes(req.user.userID);
-    const activeTypes = taskTypeModel.createTypeObjects(typeData);
-    const taskData = await taskQueries.getUserTask(selectedTaskID, 1);
-    const selectedTask = taskModel.createTaskObjects(taskData)[0];
+    await taskModel.loadUserTask(selectedTaskID, 1);
+    const selectedTask = taskModel.state.selectedTask;
     selectedTask.from = from;
 
-    const typesList = taskTypeModel.moveSelectedTaskToTop(
-      activeTypes,
-      selectedTask.taskTypeID
-    );
+    await taskTypeModel.loadTaskTypes(req.user.userID);
+    taskTypeModel.loadSelectedType(selectedTask.taskTypeID);
+    taskTypeModel.moveSelectedTaskToTop();
+    const activeTypes = taskTypeModel.state.taskTypes;
 
     res.render("modals/editCompletedTask", {
-      activeTypes: typesList,
+      activeTypes: activeTypes,
       selectedTask: selectedTask,
     });
   }
@@ -231,7 +225,7 @@ app.post("/updateTask", checkAuthentication, async function (req, res) {
 
   const from = +req.body.from;
 
-  await taskQueries.updateUserTask(newTaskInfo);
+  await taskModel.updateUserTask(newTaskInfo);
 
   // From will be set by the url parameter, it will be 0 if the modal was opened from Home, 1 if it was opened from Tasks.
   if (from === 0) {
@@ -248,9 +242,8 @@ app.get(
   checkAuthentication,
   async function (req, res) {
     const selectedTaskID = req.params.taskID;
-
-    const data = await taskQueries.getUserTask(selectedTaskID);
-    const taskInfo = taskModel.createTaskObjects(data)[0];
+    await taskModel.loadUserTask(selectedTaskID);
+    const taskInfo = taskModel.state.selectedTask;
 
     res.render("modals/deleteTask", { taskInfo: taskInfo });
   }
@@ -258,8 +251,7 @@ app.get(
 
 app.post("/deleteTask", checkAuthentication, async function (req, res) {
   const selectedTaskID = req.body.selectedID;
-
-  await taskQueries.deleteUserTask(selectedTaskID);
+  await taskModel.deleteNewTask(selectedTaskID);
 
   res.redirect("tasks");
 });
@@ -267,7 +259,7 @@ app.post("/deleteTask", checkAuthentication, async function (req, res) {
 /* Calender
 ------------------------------------------------*/
 app.get("/calendar", checkAuthentication, async function (req, res) {
-  const viewed = calendarModel.currentDate();
+  const viewed = calendarModel.loadCurrentDate();
   const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
   const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
 
@@ -277,18 +269,14 @@ app.get("/calendar", checkAuthentication, async function (req, res) {
     req.user.userID
   );
 
-  const monthTasks = calendarModel.getCalendarMonthTasks(
-    firstDay,
-    lastDay,
-    data
-  );
+  calendarModel.getCalendarMonthTasks(firstDay, lastDay, data);
 
   res.render("calendar", {
     viewedMonth: viewed.month,
     viewedYear: viewed.year,
     viewedDays: viewed.days,
     viewedTotalDays: viewed.lastDay,
-    monthTasks: JSON.stringify(monthTasks),
+    monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
   });
 });
 
@@ -305,18 +293,14 @@ app.post("/calendar/previous", checkAuthentication, async function (req, res) {
     req.user.userID
   );
 
-  const monthTasks = calendarModel.getCalendarMonthTasks(
-    firstDay,
-    lastDay,
-    data
-  );
+  calendarModel.getCalendarMonthTasks(firstDay, lastDay, data);
 
   res.render("calendar", {
     viewedMonth: viewed.month,
     viewedYear: viewed.year,
     viewedDays: viewed.days,
     viewedTotalDays: viewed.lastDay,
-    monthTasks: JSON.stringify(monthTasks),
+    monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
   });
 });
 
@@ -333,18 +317,14 @@ app.post("/calendar/next", checkAuthentication, async function (req, res) {
     req.user.userID
   );
 
-  const monthTasks = calendarModel.getCalendarMonthTasks(
-    firstDay,
-    lastDay,
-    data
-  );
+  calendarModel.getCalendarMonthTasks(firstDay, lastDay, data);
 
   res.render("calendar", {
     viewedMonth: viewed.month,
     viewedYear: viewed.year,
     viewedDays: viewed.days,
     viewedTotalDays: viewed.lastDay,
-    monthTasks: JSON.stringify(monthTasks),
+    monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
   });
 });
 
@@ -367,14 +347,23 @@ app.post("/updateInfo", checkAuthentication, async function (req, res) {
     password: password,
   };
 
-  if (password !== "") {
+  if (password.trim() !== "") {
     const hashedPassword = await bcrypt.hash(password, 10);
     userInfo.password = hashedPassword;
-    await userQueries.updateUser(userInfo, true);
+    await userModel.updateUser(userInfo, true);
   }
 
-  if (password === "") {
-    await userQueries.updateUser(userInfo);
+  if (password.trim() === "") {
+    await userModel.updateUser(userInfo);
+  }
+
+  // Update the session to include the new user name, if changed.
+  if (req.user.userName !== req.body.userName) {
+    let updatedUser = req.user;
+    updatedUser.userName = userInfo.userName;
+    req.login(updatedUser, function (error) {
+      if (error) console.log(error);
+    });
   }
 
   res.redirect("/");
@@ -383,8 +372,8 @@ app.post("/updateInfo", checkAuthentication, async function (req, res) {
 /* Task Types
 ------------------------------------------------*/
 app.get("/taskTypes", checkAuthentication, async function (req, res) {
-  const data = await taskTypeQueries.getTaskTypes(req.user.userID);
-  const activeTypes = taskTypeModel.createTypeObjects(data);
+  await taskTypeModel.loadTaskTypes(req.user.userID);
+  const activeTypes = taskTypeModel.state.taskTypes;
 
   res.render("taskTypes", { taskTypes: activeTypes });
 });
@@ -396,39 +385,29 @@ app.get("/modals/addType", checkAuthentication, function (req, res) {
 });
 
 app.post("/submitType", checkAuthentication, async function (req, res) {
-  const type_description = req.body.typeDescription;
-  const user_id = req.user.userID;
-
-  const typeInfo = {
-    type_description: type_description,
-    user_id: user_id,
-  };
-
-  await taskTypeQueries.createTaskType(typeInfo);
+  const typeDescription = req.body.typeDescription;
+  const userID = req.user.userID;
+  await taskTypeModel.createNewType(userID, typeDescription);
 
   res.redirect("taskTypes");
 });
 
 /* Edit Task Type Modal
 ------------------------------------------------*/
-app.get(
-  "/modals/editType/:typeID",
-  checkAuthentication,
-  async function (req, res) {
-    const selectedTypeID = req.params.typeID;
+app.get("/modals/editType/:typeID", checkAuthentication, function (req, res) {
+  const selectedTypeID = req.params.typeID;
+  taskTypeModel.loadSelectedType(selectedTypeID);
 
-    const data = await taskTypeQueries.getTaskTypes(req.user.userID);
-    const selectedType = data.find((type) => type.id === +selectedTypeID);
+  const selectedType = taskTypeModel.state.selectedType;
 
-    res.render("modals/editType", { selectedType: selectedType });
-  }
-);
+  res.render("modals/editType", { selectedType: selectedType });
+});
 
 app.post("/updateType", checkAuthentication, async function (req, res) {
-  const selectedTypeID = req.body.selectedID;
+  const selectedTypeID = taskTypeModel.state.selectedType.typeID;
   const typeDescription = req.body.typeDescription;
 
-  await taskTypeQueries.updateTaskType(selectedTypeID, typeDescription);
+  await taskTypeModel.updateType(selectedTypeID, typeDescription);
 
   res.redirect("taskTypes");
 });
@@ -440,18 +419,16 @@ app.get(
   checkAuthentication,
   async function (req, res) {
     const selectedTypeID = req.params.typeID;
+    taskTypeModel.loadSelectedType(selectedTypeID);
 
-    const data = await taskTypeQueries.getTaskTypes(req.user.userID);
-    const typeInfo = data.find((type) => type.id === +selectedTypeID);
+    const selectedType = taskTypeModel.state.selectedType;
 
-    res.render("modals/deleteType", { typeInfo: typeInfo });
+    res.render("modals/deleteType", { typeInfo: selectedType });
   }
 );
 
 app.post("/deleteType", checkAuthentication, async function (req, res) {
-  const selectedTypeID = req.body.selectedID;
-
-  await taskTypeQueries.deleteTaskType(selectedTypeID);
+  await taskTypeModel.deleteType();
 
   res.redirect("taskTypes");
 });

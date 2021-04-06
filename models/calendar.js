@@ -1,4 +1,12 @@
+const calendarQueries = require("../queries/calendar");
 const { DateTime } = require("luxon");
+
+const state = {
+  viewedMonth: DateTime.local().month,
+  viewedYear: DateTime.local().year,
+  viewedCalendarDays: [],
+  calendarTasks: [],
+};
 
 const monthList = [
   ``,
@@ -20,11 +28,11 @@ const monthList = [
  * Gets the current date and creates an array of the days to populate the calendar.
  * @returns An object with the month, year, last day, and an array of the days to use for the calendar.
  */
-function currentDate() {
+const loadCurrentDate = function () {
   const dateReturn = {};
   const dt = DateTime.local();
 
-  dateReturn.month = monthList[dt.month];
+  dateReturn.month = dt.monthLong;
   dateReturn.monthNumber = dt.month;
 
   if (dateReturn.monthNumber < 10) {
@@ -36,7 +44,7 @@ function currentDate() {
   dateReturn.days = _populateDayNumbers(dt.month, dt.year);
 
   return dateReturn;
-}
+};
 
 /**
  * Gets the previous month's date and creates an array of the days to populate the calendar.
@@ -46,29 +54,30 @@ function currentDate() {
  */
 function previous(displayedMonth, displayedYear) {
   const dateReturn = {};
-  let currentDisplayedMonth = monthList.findIndex(
+  const currentDisplayedMonth = monthList.findIndex(
     (month) => month === displayedMonth
   );
 
-  if (displayedMonth != "January") {
+  if (displayedMonth !== "January") {
     dateReturn.month = monthList[currentDisplayedMonth - 1];
     dateReturn.monthNumber = monthList.findIndex(
       (month) => month === dateReturn.month
     );
+
     dateReturn.year = displayedYear;
+
     dateReturn.days = _populateDayNumbers(
       currentDisplayedMonth - 1,
       +dateReturn.year
     );
+
     dateReturn.lastDay = DateTime.local(
       +dateReturn.year,
       +dateReturn.monthNumber
     ).daysInMonth;
   } else {
     dateReturn.month = monthList[12];
-    dateReturn.monthNumber = monthList.findIndex(
-      (month) => month === dateReturn.month
-    );
+    dateReturn.monthNumber = 12;
     dateReturn.year = displayedYear - 1;
     dateReturn.days = _populateDayNumbers(12, displayedYear - 1);
     dateReturn.lastDay = DateTime.local(
@@ -96,7 +105,7 @@ function next(displayedMonth, displayedYear) {
     (element) => element === displayedMonth
   );
 
-  if (displayedMonth != "December") {
+  if (displayedMonth !== "December") {
     dateReturn.month = monthList[currentDisplayedMonth + 1];
     dateReturn.monthNumber = monthList.findIndex(
       (element) => element === dateReturn.month
@@ -140,20 +149,19 @@ function _populateDayNumbers(displayedMonth, displayedYear) {
   const daysArray = [];
   const dt = DateTime.local(displayedYear, displayedMonth, 1);
 
-  let weekOneEmptyDays = dt.weekday;
-  if (weekOneEmptyDays == 7) {
-  } else {
+  const weekOneEmptyDays = dt.weekday;
+  if (weekOneEmptyDays !== 7) {
     for (let i = 1; i <= weekOneEmptyDays; i++) {
       daysArray.push(" ");
     }
   }
 
-  let count = dt.daysInMonth;
+  const count = dt.daysInMonth;
   for (let i = 1; i <= count; i++) {
     daysArray.push(i);
   }
 
-  let remainingDays = 42 - daysArray.length;
+  const remainingDays = 42 - daysArray.length;
   if (remainingDays > 0) {
     for (let i = 1; i <= remainingDays; i++) {
       daysArray.push(" ");
@@ -171,6 +179,7 @@ function _populateDayNumbers(displayedMonth, displayedYear) {
  * @returns All active tasks for the month.
  */
 function getCalendarMonthTasks(firstDay, lastDay, tasks) {
+  state.calendarTasks = [];
   const monthTasks = [];
   const [monthStartYear, monthStartMonth, monthStartDay] = firstDay.split("-");
   const [monthEndYear, monthEndMonth, monthEndDay] = lastDay.split("-");
@@ -249,12 +258,13 @@ function getCalendarMonthTasks(firstDay, lastDay, tasks) {
     monthTasks.push(taskInfo);
   });
 
-  return monthTasks;
+  state.calendarTasks = monthTasks;
 }
 
 module.exports = {
+  state: state,
   getCalendarMonthTasks: getCalendarMonthTasks,
-  currentDate: currentDate,
+  loadCurrentDate: loadCurrentDate,
   previous: previous,
   next: next,
 };

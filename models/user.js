@@ -1,29 +1,51 @@
+const userQueries = require("../queries/user");
+
+const state = {
+  users: [],
+  foundUser: {},
+};
+
 /**
  *  Creates user object based on the data received from the database.
  * @param {Array} users An array of the user objects that comes from the database.
  * @param {String} requiredInfo Marks whether this function should return all of the user's information('all') or just the user names ('userName').
  * @returns An array of objects with all of the user's information or an array with just the user names.
  */
-function createUserObjects(users, requiredInfo = "all") {
-  const listOfUsers = [];
+function _createUserObject(user, requiredInfo) {
+  if (requiredInfo === "all") {
+    return {
+      userID: user.id,
+      userName: user.user_name,
+      password: user.password,
+    };
+  }
 
-  users.forEach((user) => {
-    if (requiredInfo === "all") {
-      listOfUsers.push({
-        userID: user.id,
-        userName: user.user_name,
-        password: user.password,
-      });
-    }
-
-    if (requiredInfo === "userName") {
-      listOfUsers.push(user.user_name);
-    }
-  });
-
-  return listOfUsers;
+  if (requiredInfo === "userName") {
+    return user.user_name;
+  }
 }
 
+const loadAllUsers = async function (requiredInfo = "all") {
+  state.users = [];
+  const data = await userQueries.getAllUsers();
+
+  data.forEach((user) => {
+    const userInfo = _createUserObject(user, requiredInfo);
+    state.users.push(userInfo);
+  });
+};
+
+const createNewUser = async function (userName, hashedPassword) {
+  await userQueries.createUser(userName, hashedPassword);
+};
+
+const updateUser = async function (userInfo, password) {
+  await userQueries.updateUser(userInfo, password);
+};
+
 module.exports = {
-  createUserObjects: createUserObjects,
+  state: state,
+  loadAllUsers: loadAllUsers,
+  createNewUser: createNewUser,
+  updateUser: updateUser,
 };
