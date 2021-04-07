@@ -57,7 +57,7 @@
     </div>
 </div>
 <div id="calendarSideNav" class="sidenav">
-    <a onclick="moveNav()" id="navButton" class="navButton openNav"><i class="fas fa-angle-left fa-3x"></i></a>
+    <a onclick="moveNav()" id="navButton" class="navButton"><i class="fas fa-angle-left fa-3x"></i></a>
     <div id="selectedDayTasks">
         <h2 class="white-text text-center" id="sideNavDay"></h2>  
         <div class="scrollable-table">
@@ -175,19 +175,8 @@
         const navButton = document.getElementById('navButton');
         const sideNav = document.getElementById('calendarSideNav');
 
-        if(navButton.classList.contains("closeNav")) {
-            sideNav.style.width = "0";
-            navButton.style.right = "0";
-            navButton.classList.remove("closeNav");
-            navButton.classList.add("openNav");
-            navButton.style.transform = "rotate(360deg)";
-        } else {
-            sideNav.style.width = "500px";
-            navButton.style.right = "482px";
-            navButton.classList.add("closeNav");
-            navButton.classList.remove("openNav");
-            navButton.style.transform = "rotate(180deg)";
-        }
+        navButton.classList.toggle('navButton-open');
+        sideNav.classList.toggle('sideNav-open');
     }
 
     function populateSideNav(event) {
@@ -243,13 +232,9 @@
                 tdType.appendChild(newA2);
             }
         })
-        
-        if(navButton.classList.contains("openNav")) {
-            sideNav.style.width = "500px";
-            navButton.style.right = "482px";
-            navButton.classList.add("closeNav");
-            navButton.style.transform = "rotate(180deg)";
-        }
+
+        navButton.classList.toggle('navButton-open');
+        sideNav.classList.toggle('sideNav-open');
 
         $('.edit-modal-sidenav').on('click', function(e){
         e.preventDefault();

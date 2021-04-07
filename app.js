@@ -73,18 +73,20 @@ app.post(
 /* Registration
 ------------------------------------------------*/
 app.get("/register", checkNoAuthentication, async function (req, res) {
-  res.render("./register");
+  res.render("./register", { error: "" });
 });
 
 app.post("/register", checkNoAuthentication, async function (req, res) {
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const userName = req.body.userName;
 
-  userModel.loadAllUsers("userName");
+  await userModel.loadAllUsers("userName");
   const usersList = userModel.state.users;
 
   if (usersList.includes(userName)) {
-    res.redirect("./register");
+    res.render("./register", {
+      error: "Username taken, please try another.",
+    });
   } else {
     await userModel.createNewUser(userName, hashedPassword);
     res.redirect("./");
@@ -368,9 +370,8 @@ app.post("/updateInfo", checkAuthentication, async function (req, res) {
 ------------------------------------------------*/
 app.get("/taskTypes", checkAuthentication, async function (req, res) {
   await taskTypeModel.loadTaskTypes(req.user.userID);
-  const activeTypes = taskTypeModel.state.taskTypes;
 
-  res.render("taskTypes", { taskTypes: activeTypes });
+  res.render("taskTypes", { taskTypes: taskTypeModel.state.taskTypes });
 });
 
 /* Add Task Type Modal
