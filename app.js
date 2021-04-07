@@ -10,9 +10,6 @@ const flash = require("express-flash");
 const session = require("express-session");
 const dateFormat = require("./js/date-format");
 
-// SQL Query Files
-const calendarQueries = require("./queries/calendar");
-
 // Models
 const calendarModel = require("./models/calendar");
 const taskTypeModel = require("./models/task-type");
@@ -259,23 +256,21 @@ app.post("/deleteTask", checkAuthentication, async function (req, res) {
 /* Calender
 ------------------------------------------------*/
 app.get("/calendar", checkAuthentication, async function (req, res) {
-  const viewed = calendarModel.loadCurrentDate();
-  const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
-  const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
+  calendarModel.loadCurrentDate();
+  const firstDay = `${calendarModel.state.viewedYear}-${calendarModel.state.viewedMonthNumber}-01`;
+  const lastDay = `${calendarModel.state.viewedYear}-${calendarModel.state.viewedMonthNumber}-${calendarModel.state.viewedDaysInMonth}`;
 
-  const data = await calendarQueries.getCalendarActiveTasks(
+  await calendarModel.loadCalendarActiveTasks(
     firstDay,
     lastDay,
     req.user.userID
   );
 
-  calendarModel.getCalendarMonthTasks(firstDay, lastDay, data);
-
   res.render("calendar", {
-    viewedMonth: viewed.month,
-    viewedYear: viewed.year,
-    viewedDays: viewed.days,
-    viewedTotalDays: viewed.lastDay,
+    viewedMonth: calendarModel.state.viewedMonthName,
+    viewedYear: calendarModel.state.viewedYear,
+    viewedDays: calendarModel.state.viewedCalendarDays,
+    viewedTotalDays: calendarModel.state.viewedDaysInMonth,
     monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
   });
 });
@@ -283,23 +278,23 @@ app.get("/calendar", checkAuthentication, async function (req, res) {
 app.post("/calendar/previous", checkAuthentication, async function (req, res) {
   const currentMonth = req.body.viewedMonth;
   const currentYear = req.body.viewedYear;
-  const viewed = calendarModel.previous(currentMonth, currentYear);
-  const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
-  const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
 
-  const data = await calendarQueries.getCalendarActiveTasks(
+  calendarModel.previous(currentMonth, currentYear);
+
+  const firstDay = `${calendarModel.state.viewedYear}-${calendarModel.state.viewedMonthNumber}-01`;
+  const lastDay = `${calendarModel.state.viewedYear}-${calendarModel.state.viewedMonthNumber}-${calendarModel.state.viewedDaysInMonth}`;
+
+  await calendarModel.loadCalendarActiveTasks(
     firstDay,
     lastDay,
     req.user.userID
   );
 
-  calendarModel.getCalendarMonthTasks(firstDay, lastDay, data);
-
   res.render("calendar", {
-    viewedMonth: viewed.month,
-    viewedYear: viewed.year,
-    viewedDays: viewed.days,
-    viewedTotalDays: viewed.lastDay,
+    viewedMonth: calendarModel.state.viewedMonthName,
+    viewedYear: calendarModel.state.viewedYear,
+    viewedDays: calendarModel.state.viewedCalendarDays,
+    viewedTotalDays: calendarModel.state.viewedDaysInMonth,
     monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
   });
 });
@@ -307,23 +302,23 @@ app.post("/calendar/previous", checkAuthentication, async function (req, res) {
 app.post("/calendar/next", checkAuthentication, async function (req, res) {
   const currentMonth = req.body.viewedMonth;
   const currentYear = req.body.viewedYear;
-  const viewed = calendarModel.next(currentMonth, currentYear);
-  const firstDay = `${viewed.year}-${viewed.monthNumber}-01`;
-  const lastDay = `${viewed.year}-${viewed.monthNumber}-${viewed.lastDay}`;
 
-  const data = await calendarQueries.getCalendarActiveTasks(
+  calendarModel.next(currentMonth, currentYear);
+
+  const firstDay = `${calendarModel.state.viewedYear}-${calendarModel.state.viewedMonthNumber}-01`;
+  const lastDay = `${calendarModel.state.viewedYear}-${calendarModel.state.viewedMonthNumber}-${calendarModel.state.viewedDaysInMonth}`;
+
+  await calendarModel.loadCalendarActiveTasks(
     firstDay,
     lastDay,
     req.user.userID
   );
 
-  calendarModel.getCalendarMonthTasks(firstDay, lastDay, data);
-
   res.render("calendar", {
-    viewedMonth: viewed.month,
-    viewedYear: viewed.year,
-    viewedDays: viewed.days,
-    viewedTotalDays: viewed.lastDay,
+    viewedMonth: calendarModel.state.viewedMonthName,
+    viewedYear: calendarModel.state.viewedYear,
+    viewedDays: calendarModel.state.viewedCalendarDays,
+    viewedTotalDays: calendarModel.state.viewedDaysInMonth,
     monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
   });
 });

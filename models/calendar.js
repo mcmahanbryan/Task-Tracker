@@ -2,8 +2,10 @@ const calendarQueries = require("../queries/calendar");
 const { DateTime } = require("luxon");
 
 const state = {
-  viewedMonth: DateTime.local().month,
-  viewedYear: DateTime.local().year,
+  viewedMonthName: "",
+  viewedMonthNumber: "",
+  viewedYear: "",
+  viewedDaysInMonth: 0,
   viewedCalendarDays: [],
   calendarTasks: [],
 };
@@ -29,121 +31,100 @@ const monthList = [
  * @returns An object with the month, year, last day, and an array of the days to use for the calendar.
  */
 const loadCurrentDate = function () {
-  const dateReturn = {};
   const dt = DateTime.local();
 
-  dateReturn.month = dt.monthLong;
-  dateReturn.monthNumber = dt.month;
-
-  if (dateReturn.monthNumber < 10) {
-    dateReturn.monthNumber = `0` + dateReturn.monthNumber;
+  if (dt.month < 10) {
+    state.viewedMonthNumber = `0` + dt.month;
+  } else {
+    state.viewedMonthNumber = dt.month;
   }
 
-  dateReturn.year = dt.year;
-  dateReturn.lastDay = dt.daysInMonth;
-  dateReturn.days = _populateDayNumbers(dt.month, dt.year);
-
-  return dateReturn;
+  state.viewedMonthName = dt.monthLong;
+  state.viewedYear = dt.year;
+  state.viewedDaysInMonth = dt.daysInMonth;
+  _populateDayNumbers(dt.month, dt.year);
 };
 
 /**
- * Gets the previous month's date and creates an array of the days to populate the calendar.
- * @param {String} displayedMonth The full word of the month that is currently being shown in the calendar.
- * @param {String} displayedYear The year that is currently being shown in the calendar.
- * @returns An object with the month, year, last day, and an array of the days to use for the calendar.
+ *
+ * @param {*} displayedMonth
+ * @param {*} displayedYear
  */
 function previous(displayedMonth, displayedYear) {
-  const dateReturn = {};
   const currentDisplayedMonth = monthList.findIndex(
     (month) => month === displayedMonth
   );
 
   if (displayedMonth !== "January") {
-    dateReturn.month = monthList[currentDisplayedMonth - 1];
-    dateReturn.monthNumber = monthList.findIndex(
-      (month) => month === dateReturn.month
+    state.viewedMonthName = monthList[currentDisplayedMonth - 1];
+    state.viewedMonthNumber = monthList.findIndex(
+      (month) => month === state.viewedMonthName
     );
 
-    dateReturn.year = displayedYear;
+    state.viewedYear = +displayedYear;
 
-    dateReturn.days = _populateDayNumbers(
-      currentDisplayedMonth - 1,
-      +dateReturn.year
-    );
+    _populateDayNumbers(currentDisplayedMonth - 1, state.viewedYear);
 
-    dateReturn.lastDay = DateTime.local(
-      +dateReturn.year,
-      +dateReturn.monthNumber
+    state.viewedDaysInMonth = DateTime.local(
+      state.viewedYear,
+      state.viewedMonthNumber
     ).daysInMonth;
   } else {
-    dateReturn.month = monthList[12];
-    dateReturn.monthNumber = 12;
-    dateReturn.year = displayedYear - 1;
-    dateReturn.days = _populateDayNumbers(12, displayedYear - 1);
-    dateReturn.lastDay = DateTime.local(
-      +dateReturn.year,
-      +dateReturn.monthNumber
+    state.viewedMonthName = monthList[12];
+    state.viewedMonthNumber = 12;
+    state.viewedYear = +displayedYear - 1;
+    _populateDayNumbers(12, state.viewedYear - 1);
+    state.viewedDaysInMonth = DateTime.local(
+      state.viewedYear,
+      state.viewedMonthNumber
     ).daysInMonth;
   }
 
-  if (dateReturn.monthNumber < 10) {
-    dateReturn.monthNumber = `0` + dateReturn.monthNumber;
+  if (state.viewedMonthNumber < 10) {
+    state.viewedMonthNumber = `0` + state.viewedMonthNumber;
   }
-
-  return dateReturn;
 }
 
 /**
- * Gets the next month's date and creates an array of the days to populate the calendar.
- * @param {String} displayedMonth The full word of the month that is currently being shown in the calendar.
- * @param {String} displayedYear The year that is currently being shown in the calendar.
- * @returns An object with the month, year, last day, and an array of the days to use for the calendar.
+ *
+ * @param {*} displayedMonth
+ * @param {*} displayedYear
  */
 function next(displayedMonth, displayedYear) {
-  const dateReturn = {};
   let currentDisplayedMonth = monthList.findIndex(
     (element) => element === displayedMonth
   );
 
   if (displayedMonth !== "December") {
-    dateReturn.month = monthList[currentDisplayedMonth + 1];
-    dateReturn.monthNumber = monthList.findIndex(
-      (element) => element === dateReturn.month
+    state.viewedMonthName = monthList[currentDisplayedMonth + 1];
+    state.viewedMonthNumber = monthList.findIndex(
+      (element) => element === state.viewedMonthName
     );
-    dateReturn.year = displayedYear;
-    dateReturn.days = _populateDayNumbers(
-      currentDisplayedMonth + 1,
-      +dateReturn.year
-    );
-    dateReturn.lastDay = DateTime.local(
-      +dateReturn.year,
-      +dateReturn.monthNumber
-    ).daysInMonth;
+    state.viewedYear = +displayedYear;
+    _populateDayNumbers(currentDisplayedMonth + 1, state.viewedYear);
   } else {
-    dateReturn.month = monthList[1];
-    dateReturn.monthNumber = monthList.findIndex(
-      (element) => element === dateReturn.month
+    state.viewedMonthName = monthList[1];
+    state.viewedMonthNumber = monthList.findIndex(
+      (element) => element === state.viewedMonthName
     );
-    dateReturn.year = +displayedYear + 1;
-    dateReturn.days = _populateDayNumbers(1, +displayedYear + 1);
-    dateReturn.lastDay = DateTime.local(
-      +dateReturn.year,
-      +dateReturn.monthNumber
-    ).daysInMonth;
+    state.viewedYear = +displayedYear + 1;
+    _populateDayNumbers(1, state.viewedYear);
   }
 
-  if (dateReturn.monthNumber < 10) {
-    dateReturn.monthNumber = `0` + dateReturn.monthNumber;
-  }
+  state.viewedDaysInMonth = DateTime.local(
+    state.viewedYear,
+    state.viewedMonthNumber
+  ).daysInMonth;
 
-  return dateReturn;
+  if (state.viewedMonthNumber < 10) {
+    state.viewedMonthNumber = `0` + state.viewedMonthNumber;
+  }
 }
 
 /**
- * Creates an array that contains all of the days of the month to populate the calendar with.
- * @param {String} displayedMonth The full word of the month that is currently being shown in the calendar.
- * @param {String} displayedYear The year that is currently being shown in the calendar.
- * @returns An array that contains the month's days to populate the calendar.
+ *
+ * @param {*} displayedMonth
+ * @param {*} displayedYear
  */
 function _populateDayNumbers(displayedMonth, displayedYear) {
   const daysArray = [];
@@ -168,15 +149,14 @@ function _populateDayNumbers(displayedMonth, displayedYear) {
     }
   }
 
-  return daysArray;
+  state.viewedCalendarDays = daysArray;
 }
 
 /**
- * Gets all of the active tasks for the user from the database.
- * @param {Date} firstDay Format of YYYY/MM/DD and is the first day of the month.
- * @param {Date} lastDay Format of YYYY/MM/DD and is the last day of the month.
- * @param {Number} userID User ID of the user in the database.
- * @returns All active tasks for the month.
+ *
+ * @param {*} firstDay
+ * @param {*} lastDay
+ * @param {*} tasks
  */
 function getCalendarMonthTasks(firstDay, lastDay, tasks) {
   state.calendarTasks = [];
@@ -194,7 +174,6 @@ function getCalendarMonthTasks(firstDay, lastDay, tasks) {
       "-"
     );
     const [taskEndYear, taskEndMonth, taskEndDay] = task.task_end.split("-");
-    debugger;
     const taskStartDisplay = task.task_start_display;
     const taskEndDisplay = task.task_end_display;
     const taskType = task.type_description;
@@ -261,9 +240,26 @@ function getCalendarMonthTasks(firstDay, lastDay, tasks) {
   state.calendarTasks = monthTasks;
 }
 
+/**
+ *
+ * @param {*} firstDay
+ * @param {*} lastDay
+ * @param {*} userID
+ */
+const loadCalendarActiveTasks = async function (firstDay, lastDay, userID) {
+  const data = await calendarQueries.getCalendarActiveTasks(
+    firstDay,
+    lastDay,
+    userID
+  );
+
+  getCalendarMonthTasks(firstDay, lastDay, data);
+};
+
 module.exports = {
   state: state,
   getCalendarMonthTasks: getCalendarMonthTasks,
+  loadCalendarActiveTasks: loadCalendarActiveTasks,
   loadCurrentDate: loadCurrentDate,
   previous: previous,
   next: next,

@@ -180,13 +180,13 @@
             navButton.style.right = "0";
             navButton.classList.remove("closeNav");
             navButton.classList.add("openNav");
-            navButton.innerHTML = `<i class="fas fa-angle-left fa-3x"></i>`;
+            navButton.style.transform = "rotate(360deg)";
         } else {
             sideNav.style.width = "500px";
             navButton.style.right = "482px";
             navButton.classList.add("closeNav");
             navButton.classList.remove("openNav");
-            navButton.innerHTML = `<i class="fas fa-angle-right fa-3x"></i>`;
+            navButton.style.transform = "rotate(180deg)";
         }
     }
 
@@ -199,7 +199,7 @@
         const sideNav = document.getElementById('calendarSideNav');
         
         tableBody.textContent = '';
-        sideNavDay.innerHTML = `${monthAndDay}`;
+        sideNavDay.innerText = `${monthAndDay}`;
 
         tasks.forEach((element) => { 
             if (element.taskStart <= day && day <= element.taskEnd) { 
@@ -248,7 +248,7 @@
             sideNav.style.width = "500px";
             navButton.style.right = "482px";
             navButton.classList.add("closeNav");
-            navButton.innerHTML = `<i class="fas fa-angle-right fa-3x"></i>`;   
+            navButton.style.transform = "rotate(180deg)";
         }
 
         $('.edit-modal-sidenav').on('click', function(e){
@@ -262,7 +262,6 @@
         });
        
     }
-
 </script>
 
 <!-- Edit Task Modal Script
