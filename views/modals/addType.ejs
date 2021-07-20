@@ -1,6 +1,6 @@
 <!-- Add Task Type Modal 
  -------------------------------------------------->
- <form action="/modals/addType/submitType" method="POST" class="no-margin">
+ <form class="no-margin">
     <div class="modal-header header no-border">
       <h5 class="modal-title white-text" id="addNewTaskTypeModalTitle">Add New Task Type</h5>
         <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
@@ -11,12 +11,79 @@
       <div class="modalFields">
         <label for="taskType" class="required">Task Type</label> 
         </br>
-        <input type="text" name="typeDescription" maxlength="50"  size="50" required>
+        <input type="text" name="typeDescription" class="typeDescription" maxlength="50"  size="50" required>
       </div>
     </div>
     <div class="modal-footer footer-color no-border">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary submit-button">Save</button>
     </div>
   </form>
   
+<script>
+  const submitBtn = document.querySelector('.submit-button');
+  const closeBtn = document.querySelector('.close-button');
+  const typeTable = document.querySelector('.type-table-body');
+    
+  submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const errorFields = document.querySelectorAll('p.error-text');
+    errorFields.forEach(field => {
+      field.remove();
+    });
+    
+    const validationErrors = [];
+
+    if (!document.querySelector('.typeDescription').value) {
+      validationErrors.push(["typeDescription", "Please enter a type description"]);
+    }
+
+    if (validationErrors.flat(1).length > 0) {
+      displayValidationErrors(validationErrors);
+      return;
+    }
+
+    const typeData = {
+      "typeDescription": document.querySelector('.typeDescription').value,
+    };
+   
+    $.ajax({
+      type:"POST",
+      url: "/taskTypes/submitType",
+      data: typeData,
+      dataType: "json",
+      success: function(result) {
+        if (result.errors.flat(1).length > 0) {
+          displayValidationErrors(result.errors);
+          return;
+        }
+
+        typeTable.innerHTML = '';
+        typeTable.innerHTML = result.htmlText;
+  
+        $('.edit-modal').on('click', function(e){
+          e.preventDefault();
+          $('#editTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+        });
+  
+        $('.delete-modal').on('click', function(e){
+          e.preventDefault();
+          $('#deleteTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+        });
+
+        closeBtn.click();
+      }
+    });
+  })
+
+  const displayValidationErrors = function (errors) {
+    errors.forEach(([field, text]) => {
+        const errorText = document.createElement('p');
+        errorText.innerText = text;
+        errorText.classList.add('error-text');
+        document.querySelector(`.${field}`).after(errorText);
+        document.querySelector(`.${field}`).classList.add('error-border');
+      })
+  }
+</script>

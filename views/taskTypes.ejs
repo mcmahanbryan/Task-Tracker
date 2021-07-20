@@ -6,7 +6,7 @@
 <div class="container page-starter">
     <div class="row">
         <div class="col-lg-8">
-            <a href="./modals/addType" class="add-modal add-task-button btn btn-primary">Add New Type</a>
+            <a href="./taskTypes/addType" class="add-modal add-task-button btn btn-primary">Add New Type</a>
         </div>
     </div>
 </div>
@@ -24,35 +24,22 @@
             <th></th>
         </tr>
         </thead>
-        <tbody>
-            <%if (taskTypes.length > 0){ %>
-                <% taskTypes.forEach(function(row) { %>
-                    <tr>
-                        <td><%= row.typeDescription %></td>
-                        <td> 
-                            <% if(row.custom == 1) {  %>
-                                <a href="./modals/editType/<%= row.typeID %>"
-                                    title="Edit Type"
-                                    class="btn btn-success btn-sm edit-modal">
-                                    <i class="far fa-edit"></i>
-                                </a>
-                                <a href="./modals/deleteType/<%= row.typeID %>"
-                                    title="Delete Type"
-                                    class="btn btn-danger btn-sm delete-modal">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            <% } %>
-                        </td>
-                    </tr>
-                <% }) %>
-                <% } %>
-        </tbody>
+        <tbody class="type-table-body"></tbody>
     </table>
     </div>
 </div>
 
 
 <%- include('partials/footer') %>
+
+<!-- Populates the table body with active task types
+ -------------------------------------------------->
+ <script>
+    const htmlText = `<%- htmlText %>`;
+    const typeTable = document.querySelector('.type-table-body');
+    typeTable.innerHTML = '';
+    typeTable.innerHTML = htmlText;
+  </script>
 
 
 <!-- Add New Task Type Modal 
@@ -100,3 +87,4 @@ $('.delete-modal').on('click', function(e){
       $('#deleteTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
     });
 </script>
+

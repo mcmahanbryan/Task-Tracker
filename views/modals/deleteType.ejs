@@ -1,6 +1,6 @@
 <!-- Delete Task Type Modal 
  -------------------------------------------------->
- <form action="/modals/deleteType/delete" method="POST" class="no-margin">
+ <form class="no-margin">
     <div class="modal-header header no-border">
       <h5 class="modal-title white-text" id="deleteTypeModalTitle">Delete Task Type</h5>
         <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
@@ -13,8 +13,40 @@
       </div>
     </div>
     <div class="modal-footer footer-color no-border">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      <button type="submit" class="btn btn-danger">Delete</button>
+      <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-danger submit-button">Delete</button>
     </div>
   </form>
   
+
+  <script>
+    const submitBtn = document.querySelector('.submit-button');
+    const closeBtn = document.querySelector('.close-button');
+    const typeTable = document.querySelector('.type-table-body');
+    
+    submitBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      $.ajax({
+        type:"POST",
+        url: "/taskTypes/submitDelete",
+        dataType: "html",
+        success: function(result) {
+          typeTable.innerHTML = '';
+          typeTable.innerHTML = result;
+    
+          $('.edit-modal').on('click', function(e){
+            e.preventDefault();
+            $('#editTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+          });
+    
+          $('.delete-modal').on('click', function(e){
+            e.preventDefault();
+            $('#deleteTaskTypeModal').modal('show').find('.modal-content').load($(this).attr('href'));
+          });
+    
+          closeBtn.click();
+        }
+      });
+    });
+  </script>

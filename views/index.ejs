@@ -20,22 +20,7 @@
             <th class="today-title today-smaller-headings">End Date</th>
           </tr>
         </thead>
-        <tbody>
-          <%if (todaysTasks.length > 0){ %> 
-            <%todaysTasks.forEach(function(row){ %>
-          <tr
-            class="today-table-row edit-modal"
-            onclick="./modals/editTask/<%= row.taskID %>/0"
-          </tr> 
-            <td>* <%= row.taskTitle %></td>
-            <td class="white-divider"><%= row.taskType %></td>
-            <td class="white-divider"><%= row.taskEnd %></td>
-          </tr>
-          <% })}else { %>
-          <tr>
-            <td colspan="3" class="white-text">No Tasks Today</td>
-          </tr>
-          <% } %>
+        <tbody class='task-table-body'>
         </tbody>
       </table>
     </div>
@@ -44,6 +29,17 @@
 </div>
 
 <%- include('partials/footer') %>
+
+
+<!-- Populates the table body with today's tasks
+ -------------------------------------------------->
+ <script>
+  const htmlText = `<%- htmlText %>`;
+  const taskTable = document.querySelector('.task-table-body');
+  taskTable.innerHTML = '';
+  taskTable.innerHTML = htmlText;
+</script>
+
 
 <!-- Edit Task Modal 
     -------------------------------------------------->

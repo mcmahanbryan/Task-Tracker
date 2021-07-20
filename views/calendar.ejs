@@ -4,29 +4,21 @@
 
 <div class="container-fluid index-spacing">
     <div class="col-lg-12 calendar-month-title">
-        <h7><%= viewedYear %></h7>
+        <h7 class="viewed-year"><%= viewedYear %></h7>
     </div>
         <div class="col-lg-12 row calendar-month-title">
             <div class="col-lg-4 text-right">
-            <form action="/calendar/previous" method="post" class="inline">
-                <input type="text" name="viewedMonth" value="<%- viewedMonth %>" hidden>
-                <input type="text" name="viewedYear" value="<%- viewedYear %>" hidden>
-                <button type="submit" id="left-arrow" class="arrow-button-left">
-                    <i class="fas fa-arrow-left fa-2x"></i>
+                <button type="submit" class="arrow-button-left inline change-month-btn previous-month">
+                    <i class="fas fa-arrow-left fa-2x previous-month"></i>
                 </button>
-            </form>
             </div>
             <div class="col-lg-4">
-            <h2 id="month-name" class="inline"><%= viewedMonth %></h2>
+            <h2 class="viewed-month" class="inline"><%= viewedMonth %></h2>
             </div>
             <div class="col-lg-4 text-left">
-            <form action="/calendar/next" method="post" class="inline">
-                <input type="text" name="viewedMonth" value="<%- viewedMonth %>" hidden>
-                <input type="text" name="viewedYear" value="<%- viewedYear %>" hidden>
-                <button class="arrow-button-right">
-                    <i class="fas fa-arrow-right fa-2x"></i>
+                <button type="submit" class="arrow-button-right inline change-month-btn next-month">
+                    <i class="fas fa-arrow-right fa-2x next-month"></i>
                 </button>
-            </form>
             </div>
         </div>
         <div class="row">
@@ -50,7 +42,7 @@
                 <th>Friday</th>
                 <th>Saturday</th>        
             </thead>
-            <tbody id="calendar-body">
+            <tbody class="task-table-body">
             </tbody>    
         </table>
         </div>
@@ -72,7 +64,7 @@
                         <th class="today-smaller-headings">Type</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
+                <tbody id="today-table-sidenav-body">
                 </tbody>
             </table>    
         </div>
@@ -80,6 +72,15 @@
 </div>
 
 <%- include('partials/footer') %>
+
+<!-- Populates the calendar body for the initial load
+ -------------------------------------------------->
+ <script>
+    const htmlText = `<%- htmlText %>`;
+    const calendarBody = document.querySelector(".task-table-body");
+    calendarBody.innerHTML = '';
+    calendarBody.innerHTML = htmlText;
+</script>
 
 
 <!-- Edit Task Modal
@@ -100,77 +101,7 @@
     </div>
   </div>
 
-
-
-<script>
-    let tasks = JSON.parse(`<%- monthTasks %>`);
-    let dayNumbers = '<%- viewedDays %>'.split(',');
-    let count = 0;
-    const calendar = document.getElementById("calendar-body");
-    
-    for (let week = 1; week <= 6; week++) {
-        let trCreation = document.createElement(`tr`);
-        trCreation.className = `row${week} calendar-table-row`;
-        calendar.appendChild(trCreation);
-
-        for (let day = 1; day <= 7; day++) {
-            let tdCreation = document.createElement(`td`);
-            tdCreation.className = `${dayNumbers[count]}`;
-            trCreation.appendChild(tdCreation);
-
-            let pCreation = document.createElement(`p`);
-            pCreation.className = `calendar-day-number`;
-            pCreation.innerText = `${dayNumbers[count]}`;
-            tdCreation.appendChild(pCreation);
-
-            count++;
-        }
-    }
-
-    for (let day = 1; day <= `<%- viewedTotalDays %>`; day++) {
-        let currentDay = document.getElementsByClassName(`${day}`);
-        let dayTaskNumber = currentDay[0].children.length;
-        
-        if(tasks.length === 0) {
-            break;
-        }
-
-        tasks.forEach((element) => { 
-            if (element.taskStart <= day && day <= element.taskEnd) { 
-                if(currentDay[0].children.length < 4) {
-                
-                    let aTask = document.createElement('a');
-                    aTask.title = element.taskTitle;
-
-                    if(element.taskComplete === 0) {
-                        aTask.className = `calendar-task-row-active edit-modal`;
-                        aTask.href = `/modals/editTask/${element.taskID}/1`;
-                    } else {
-                        aTask.className = `calendar-task-row-complete edit-completed-modal`;
-                        aTask.href = `/modals/editCompletedTask/${element.taskID}/1`;
-                    }
-
-                    let title;
-                    if(element.taskTitle.length > 27) {
-                        title = element.taskTitle.slice(0,27) + '...';
-                    } else {
-                        title = element.taskTitle;
-                    }
-                    aTask.innerHTML = `${title}`; 
-                    currentDay[0].appendChild(aTask); 
-                } else if(currentDay[0].children.length === 4) {
-                    let pTask = document.createElement('p');
-                    pTask.className = `calendar-task-overflow`;
-                    pTask.innerText = '........';
-                    pTask.title = 'Expand Day';
-                    pTask.id = `<%= viewedMonth %> ${day}`;
-                    pTask.onclick = populateSideNav;
-                    currentDay[0].appendChild(pTask); 
-                } 
-            } 
-        }) 
-    } 
-
+<script> 
     function moveNav() {
         const navButton = document.getElementById('navButton');
         const sideNav = document.getElementById('calendarSideNav');
@@ -179,74 +110,7 @@
         sideNav.classList.toggle('sideNav-open');
     }
 
-    function populateSideNav(event) {
-        const monthAndDay = event.target.id;
-        const day = event.target.id.split(" ")[1];
-        const sideNavDay = document.getElementById('sideNavDay');
-        const tableBody = document.getElementById('tableBody');
-        const navButton = document.getElementById('navButton');
-        const sideNav = document.getElementById('calendarSideNav');
-        
-        tableBody.textContent = '';
-        sideNavDay.innerText = `${monthAndDay}`;
 
-        tasks.forEach((element) => { 
-            if (element.taskStart <= day && day <= element.taskEnd) { 
-                let newRow = document.createElement('tr');
-                let newA1 = document.createElement('a');
-                let newA2 = document.createElement('a');
-
-                if (element.taskComplete == 0) {
-                    newRow.className = `today-table-row-sidenav`;
-                    newA1.href = `/modals/editTask/${element.taskID}/1`;
-                    newA2.href = `/modals/editTask/${element.taskID}/1`;
-                    newA1.className = `edit-modal-sidenav`;
-                    newA2.className = `edit-modal-sidenav`;
-                } else {
-                    newRow.className = `today-table-row-sidenav-completed`;
-                    newA1.href = `/modals/editCompletedTask/${element.taskID}/1`;
-                    newA2.href = `/modals/editCompletedTask/${element.taskID}/1`;
-                    newA1.className = `edit-completed-modal-sidenav`;
-                    newA2.className = `edit-completed-modal-sidenav`;
-                }
-                
-                tableBody.appendChild(newRow);
-
-                let title;
-                if(element.taskTitle.length > 40) {
-                    title = element.taskTitle.slice(0,40) + '...';
-                } else {
-                    title = element.taskTitle;
-                }
-
-                let tdTitle = document.createElement('td');
-                newA1.innerText = `* ${title}`;
-                newRow.appendChild(tdTitle);
-                tdTitle.appendChild(newA1);
-
-
-                let tdType = document.createElement('td');
-                tdType.className = `white-divider`;
-                newA2.innerText = `${element.typeDescription}`;
-                newRow.appendChild(tdType);
-                tdType.appendChild(newA2);
-            }
-        })
-
-        navButton.classList.toggle('navButton-open');
-        sideNav.classList.toggle('sideNav-open');
-
-        $('.edit-modal-sidenav').on('click', function(e){
-        e.preventDefault();
-        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-        });
-
-        $('.edit-completed-modal-sidenav').on('click', function(e){
-        e.preventDefault();
-        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-        });
-       
-    }
 </script>
 
 <!-- Edit Task Modal Script
@@ -266,3 +130,102 @@ $('.edit-completed-modal').on('click', function(e){
       $('#editCompletedTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
     });
 </script>
+
+
+<script>
+const sideNavHeader = document.getElementById('sideNavDay');
+const sideNavBody = document.getElementById('today-table-sidenav-body');
+
+const populateSideNavSetup = function () {
+    const calendarCells = document.querySelectorAll('.calendar-cell');
+    
+    calendarCells.forEach(cell => {
+        const [selectedCellDay,] = cell.className.split(' ');
+
+        if (!selectedCellDay) {
+            return;
+        }
+
+        cell.addEventListener('click', (e) => {
+            e.preventDefault();
+            const selectedDay = {"selectedDay": selectedCellDay};
+
+            $.ajax({
+                type:"POST",
+                url: "/calendar/populateSideNav",
+                data: selectedDay,
+                dataType: "json",
+                success: function(result) {
+                    sideNavHeader.innerHTML = '';
+                    sideNavHeader.innerHTML = result.header;
+                    sideNavBody.innerHTML = '';
+                    sideNavBody.innerHTML = result.html;
+
+                    $('.edit-modal-sidenav').on('click', function(e){
+                        e.preventDefault();
+                        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+                    });
+
+                    $('.edit-completed-modal-sidenav').on('click', function(e){
+                        e.preventDefault();
+                        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+                    });
+                }
+            });
+        })
+    });
+};
+
+populateSideNavSetup();
+
+const changeMonthBtns = document.querySelectorAll('.change-month-btn');
+
+changeMonthBtns.forEach(monthBtn => {
+    monthBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const monthChangeDirection = (e.target.className.includes("previous-month"))
+            ? 'previous'
+            : 'next'
+        ;
+
+        const monthChange = {
+            "direction": monthChangeDirection,
+        };
+
+        $.ajax({
+            type:"POST",
+            url: "/calendar/changeMonth",
+            data: monthChange,
+            dataType: "json",
+            success: function(result) {
+                const calendarBody = document.querySelector('.task-table-body');
+                const viewedYear = document.querySelector('.viewed-year');
+                const viewedMonth = document.querySelector('.viewed-month');
+                calendarBody.innerHTML = '';
+                viewedYear.innerHTML = ''
+                viewedMonth.innerHTML = ''
+                calendarBody.innerHTML = result.tableHtml;
+                viewedYear.innerHTML = result.year;
+                viewedMonth.innerHTML = result.month;
+                
+
+                $('.edit-modal').on('click', function(e){
+                    e.preventDefault();
+                    $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+                });
+
+
+                $('.edit-completed-modal').on('click', function(e){
+                    e.preventDefault();
+                    $('#editCompletedTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+                });
+
+                populateSideNavSetup();
+            }
+        });
+    })
+})
+</script>
+
+

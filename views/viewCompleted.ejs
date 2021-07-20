@@ -32,27 +32,7 @@
             <th></th>
         </tr>
         </thead>
-        <tbody>
-            <%if (completedTasks.length > 0){ %>
-                <% completedTasks.forEach(function(row){ %>
-                <tr>
-                    <td><%= row.taskTitle %></td>
-                    <td><%= row.taskType %></td>
-                    <td><%= row.taskStartDisplay %></td> 
-                    <td><%= row.taskEndDisplay %></td>
-                    <td><%= row.taskCompletedDisplay %></td> 
-                    <td> <a href="./modals/editCompletedTask/<%= row.taskID %>/1"
-                        title="View Completed Task"
-                        class="btn btn-success btn-sm edit-completed-modal">
-                        <i class="far fa-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-            <% })}else { %>
-              <tr>
-                <td colspan="6" class="white-text">No Completed Tasks</td>
-              </tr>
-            <% } %>
+        <tbody class="task-table-body">
         </tbody>
     </table>
     </div>
@@ -60,6 +40,12 @@
 
 <%- include('partials/footer') %>
 
+<script>
+  const htmlText = `<%- htmlText %>`;
+  const taskTable = document.querySelector('.task-table-body');
+  taskTable.innerHTML = '';
+  taskTable.innerHTML = htmlText;
+</script>
 
 <!-- Add New Task Modal 
  -------------------------------------------------->
@@ -75,7 +61,6 @@ $('.add-modal').on('click', function(e){
       $('#addNewTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
     });
 </script>
-
 
 <!-- Edit Completed Task Modal 
  -------------------------------------------------->

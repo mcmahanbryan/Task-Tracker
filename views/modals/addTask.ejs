@@ -1,6 +1,6 @@
 <!-- Add New Task Modal 
  -------------------------------------------------->
-<form action="/modals/addTask/submit" method="POST" class="no-margin">
+<form class="no-margin add-task-form">
   <div class="modal-header header no-border">
     <h5 class="modal-title white-text" id="addNewTaskModalTitle">Add New Task</h5>
       <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
@@ -11,12 +11,12 @@
     <div class="modalFields">
       <label for="taskTitle" class="required">Task Title</label> 
       </br>
-      <input type="text" name="taskTitle" maxlength="100"  size="56" required>
+      <input type="text" name="taskTitle" class="taskTitle" maxlength="100"  size="56" required>
     </div>
     <div class="modalFields input-padding">
       <label for="taskType" class="required">Task Type</label>
       </br>
-      <select name="taskType" required>
+      <select name="taskType" class="taskType" required>
       <% activeTypes.forEach(function(row){ %>
       <option value=<%= row.typeID %>><%= row.typeDescription %></option>
       <% }) %>
@@ -25,22 +25,105 @@
     <div class="modalFields inline input-padding">
       <label for="startDate" class="required">Start Date</label>
       <br>
-      <input type="date" required name="startDate" value=<%= dateFormat.currentDate() %> pattern="\d{2}-\d{2}-\d{4}">
+      <input type="date" required name="startDate" class="startDate" value=<%= dateFormat.currentDate() %> pattern="\d{2}-\d{2}-\d{4}">
     </div>
     <div class="modalFields inline input-padding">
       <label for="endDate" class="required">End Date</label>
       <br>
-      <input type="date" required name="endDate" value=<%= dateFormat.currentDate() %> pattern="\d{2}-\d{2}-\d{4}">
+      <input type="date" required name="endDate" class="endDate" value=<%= dateFormat.currentDate() %> pattern="\d{2}-\d{2}-\d{4}">
     </div>
     <br>
     <div class="modalFields">
       <label for="taskDescription">Task Description</label>
       <br>
-      <textarea name="taskDescription" cols="59" rows="5" maxlength="500"></textarea>
+      <textarea name="taskDescription" class="taskDescription" cols="59" rows="5" maxlength="500"></textarea>
     </div>
   </div>
   <div class="modal-footer footer-color no-border">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary submit-button">Save</button>
   </div>
 </form>
+
+
+<script>
+const submitBtn = document.querySelector('.submit-button');
+const closeBtn = document.querySelector('.close-button');
+const taskTable = document.querySelector('.task-table-body');
+
+submitBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  const errorFields = document.querySelectorAll('p.error-text');
+    errorFields.forEach(field => {
+      field.previousElementSibling.classList.remove('error-border');
+      field.remove();
+    });
+    
+    const validationErrors = [];
+
+    if (!document.querySelector('.taskTitle').value) {
+      validationErrors.push(["taskTitle", "Please enter a task title"]);
+    }
+    if (!document.querySelector('.taskType').value) {
+      validationErrors.push(["taskType", "Please select a task type"]);
+    }
+    if (!document.querySelector('.startDate').value) {
+      validationErrors.push(["startDate", "Please enter a start date"]);
+    }
+    if (!document.querySelector('.endDate').value) {
+      validationErrors.push(["endDate", "Please enter an End Date"]);
+    }
+
+    if (validationErrors.flat(1).length > 0) {
+      displayValidationErrors(validationErrors);
+      return;
+    }
+
+  const taskData = {
+    "taskTitle": document.querySelector('.taskTitle').value,
+    "taskType": document.querySelector('.taskType').value,
+    "startDate": document.querySelector('.startDate').value,
+    "endDate": document.querySelector('.endDate').value,
+    "taskDescription": document.querySelector('.taskDescription').value,
+  };
+
+  $.ajax({
+    type:"POST",
+    url: "/tasks/submitTask",
+    data: taskData,
+    dataType: "json",
+    success: function (result) {
+      if (result.errors.flat(1).length > 0) {
+        displayValidationErrors(result.errors);
+        return;
+      }
+
+      taskTable.innerHTML = '';
+      taskTable.innerHTML = result.htmlText;
+
+      $('.edit-modal').on('click', function(e){
+        e.preventDefault();
+        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+      });
+
+      $('.delete-modal').on('click', function(e){
+        e.preventDefault();
+        $('#deleteTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+      });
+
+      closeBtn.click();
+    }
+  });
+})
+
+const displayValidationErrors = function (errors) {
+    errors.forEach(([field, text]) => {
+        const errorText = document.createElement('p');
+        errorText.innerText = text;
+        errorText.classList.add('error-text');
+        document.querySelector(`.${field}`).after(errorText);
+        document.querySelector(`.${field}`).classList.add('error-border');
+      })
+  }
+</script>

@@ -52,9 +52,10 @@ const updateType = async function (typeID, typeDescription) {
 
 const deleteType = async function () {
   await taskTypeQueries.deleteTaskType(state.selectedType.typeID);
+  state.selectedType = {};
 };
 
-const moveSelectedTaskToTop = function () {
+const moveSelectedTaskTypeToTop = function () {
   // Taking the task's existing type and moving it to the top of the list because I could not
   // find a better way to do it while loading the modal and setting the existing type as selected.
   const matchingIndex = state.taskTypes.findIndex(
@@ -64,6 +65,18 @@ const moveSelectedTaskToTop = function () {
   state.taskTypes = removedType.concat(state.taskTypes);
 };
 
+const isValidData = function (data) {
+  const errors = [];
+
+  state.taskTypes.forEach(type => {
+    if (type.typeDescription === data) {
+      errors.push(["typeDescription", "Type already created"]);
+    };
+  })
+
+  return errors;
+} 
+
 module.exports = {
   state: state,
   loadTaskTypes: loadTaskTypes,
@@ -71,5 +84,6 @@ module.exports = {
   createNewType: createNewType,
   updateType: updateType,
   deleteType: deleteType,
-  moveSelectedTaskToTop: moveSelectedTaskToTop,
+  moveSelectedTaskTypeToTop: moveSelectedTaskTypeToTop,
+  isValidData: isValidData,
 };

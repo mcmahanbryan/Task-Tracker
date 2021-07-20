@@ -31,9 +31,7 @@ form label.required:after {
 .arrow-button:hover {
   color: #3a6294;
 }
-.bad-login {
-  color: red;
-}
+
 .body-color {
   background-color: rgb(145, 140, 129);
 }
@@ -162,6 +160,15 @@ form label.required:after {
   background-color: #589ec4;
   border-color: #589ec4;
 }
+.error-border {
+  border-color: rgb(150, 33, 33);
+  border-style: solid;
+}
+.error-text {
+  color: rgb(150, 33, 33);
+  margin: 0;
+  display: table;
+}
 .footer {
   position: fixed;
   left: 0;
@@ -193,6 +200,11 @@ form label.required:after {
 .input-padding {
   padding: 0.3rem 2rem 0.3rem 0;
 }
+.myInfo-form {
+  border: 2px solid black;
+  max-width: 460px;
+  padding-left: 21px;
+}
 .navButton {
   position: absolute;
   text-align: center;
@@ -222,7 +234,7 @@ form label.required:after {
   margin-top: 7rem;
 }
 .right-button {
-  padding: 1rem 0 0 21.1rem;
+  padding: 1rem 0 1rem 20rem;
 }
 
 .reg-error {

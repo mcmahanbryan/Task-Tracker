@@ -17,6 +17,9 @@ function _createTaskObject(task) {
     : null;
   const taskEndDisplay = task.task_end_display ? task.task_end_display : null;
   const taskType = task.type_description ? task.type_description : null;
+  const taskCompletedDate = task.completed_date
+  ? task.completed_date
+  : null;
   const completedDateDisplay = task.completed_date_display
     ? task.completed_date_display
     : null;
@@ -32,6 +35,7 @@ function _createTaskObject(task) {
     taskEndDisplay: taskEndDisplay,
     taskType: taskType,
     taskCompletedDisplay: completedDateDisplay ? completedDateDisplay : null,
+    taskCompletedDate: taskCompletedDate ? taskCompletedDate : null,
   };
 }
 
@@ -71,12 +75,23 @@ const createNewTask = async function (taskInfo) {
 
 const deleteNewTask = async function (taskID) {
   await taskQueries.deleteUserTask(taskID);
+  state.selectedTask = {};
 };
 
 const updateUserTask = async function (taskInfo) {
   await taskQueries.updateUserTask(taskInfo);
   state.selectedTask = {};
 };
+
+const isValidData = function (data) {
+  const errors = [];
+
+  if (data.task_start > data.task_end) {
+      errors.push(["startDate", "Must start before End Date"]);
+    };
+
+    return errors;
+} 
 
 module.exports = {
   state: state,
@@ -86,4 +101,5 @@ module.exports = {
   createNewTask: createNewTask,
   deleteNewTask: deleteNewTask,
   updateUserTask: updateUserTask,
+  isValidData: isValidData,
 };

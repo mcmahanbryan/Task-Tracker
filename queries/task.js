@@ -34,6 +34,11 @@ function getUserTask(taskID, completed = 0) {
           ? 'DATE_FORMAT(t.completed_date, "%m/%d/%Y") as completed_date_display,'
           : ""
       } 
+      ${
+        completed
+          ? 'DATE_FORMAT(t.completed_date, "%Y-%m-%d") as completed_date,'
+          : ""
+      } 
       tt.type_description
       FROM task t
       JOIN task_type tt ON tt.id = t.task_type_id
@@ -63,10 +68,10 @@ function updateUserTask(updatedTaskInfo) {
          complete = ? WHERE id = ?`,
       [
         updatedTaskInfo.title,
-        updatedTaskInfo.taskDescription,
-        updatedTaskInfo.taskType,
-        updatedTaskInfo.startDate,
-        updatedTaskInfo.endDate,
+        updatedTaskInfo.task_description,
+        updatedTaskInfo.task_type,
+        updatedTaskInfo.task_start,
+        updatedTaskInfo.task_end,
         updatedTaskInfo.complete,
         updatedTaskInfo.selectedID,
       ],
