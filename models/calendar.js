@@ -10,7 +10,7 @@ const state = {
   calendarTasks: [],
 };
 
-const monthList = [
+const _monthList = [
   ``,
   `January`,
   `February`,
@@ -33,12 +33,7 @@ const monthList = [
 const loadCurrentDate = function () {
   const dt = DateTime.local();
 
-  if (dt.month < 10) {
-    state.viewedMonthNumber = `0` + dt.month;
-  } else {
-    state.viewedMonthNumber = dt.month;
-  }
-
+  state.viewedMonthNumber = String(dt.month).padStart(2, `0`);
   state.viewedMonthName = dt.monthLong;
   state.viewedYear = dt.year;
   state.viewedDaysInMonth = dt.daysInMonth;
@@ -50,14 +45,14 @@ const loadCurrentDate = function () {
  * @param {*} displayedMonth
  * @param {*} displayedYear
  */
-function previous(displayedMonth, displayedYear) {
-  const currentDisplayedMonth = monthList.findIndex(
+const previous = function(displayedMonth, displayedYear) {
+  const currentDisplayedMonth = _monthList.findIndex(
     (month) => month === displayedMonth
   );
 
   if (displayedMonth !== "January") {
-    state.viewedMonthName = monthList[currentDisplayedMonth - 1];
-    state.viewedMonthNumber = monthList.findIndex(
+    state.viewedMonthName = _monthList[currentDisplayedMonth - 1];
+    state.viewedMonthNumber = _monthList.findIndex(
       (month) => month === state.viewedMonthName
     );
 
@@ -69,8 +64,9 @@ function previous(displayedMonth, displayedYear) {
       state.viewedYear,
       state.viewedMonthNumber
     ).daysInMonth;
+
   } else {
-    state.viewedMonthName = monthList[12];
+    state.viewedMonthName = _monthList[12];
     state.viewedMonthNumber = 12;
     state.viewedYear = +displayedYear - 1;
     _populateDayNumbers(12, state.viewedYear - 1);
@@ -80,9 +76,8 @@ function previous(displayedMonth, displayedYear) {
     ).daysInMonth;
   }
 
-  if (state.viewedMonthNumber < 10) {
-    state.viewedMonthNumber = `0` + state.viewedMonthNumber;
-  }
+  state.viewedMonthNumber = String(state.viewedMonthNumber)
+    .padStart(2, `0`);
 }
 
 /**
@@ -90,21 +85,21 @@ function previous(displayedMonth, displayedYear) {
  * @param {*} displayedMonth
  * @param {*} displayedYear
  */
-function next(displayedMonth, displayedYear) {
-  let currentDisplayedMonth = monthList.findIndex(
+const next = function(displayedMonth, displayedYear) {
+  let currentDisplayedMonth = _monthList.findIndex(
     (element) => element === displayedMonth
   );
 
   if (displayedMonth !== "December") {
-    state.viewedMonthName = monthList[currentDisplayedMonth + 1];
-    state.viewedMonthNumber = monthList.findIndex(
+    state.viewedMonthName = _monthList[currentDisplayedMonth + 1];
+    state.viewedMonthNumber = _monthList.findIndex(
       (element) => element === state.viewedMonthName
     );
     state.viewedYear = +displayedYear;
     _populateDayNumbers(currentDisplayedMonth + 1, state.viewedYear);
   } else {
-    state.viewedMonthName = monthList[1];
-    state.viewedMonthNumber = monthList.findIndex(
+    state.viewedMonthName = _monthList[1];
+    state.viewedMonthNumber = _monthList.findIndex(
       (element) => element === state.viewedMonthName
     );
     state.viewedYear = +displayedYear + 1;
@@ -116,9 +111,8 @@ function next(displayedMonth, displayedYear) {
     state.viewedMonthNumber
   ).daysInMonth;
 
-  if (state.viewedMonthNumber < 10) {
-    state.viewedMonthNumber = `0` + state.viewedMonthNumber;
-  }
+  state.viewedMonthNumber = String(state.viewedMonthNumber)
+    .padStart(2, `0`);
 }
 
 /**
@@ -126,7 +120,7 @@ function next(displayedMonth, displayedYear) {
  * @param {*} displayedMonth
  * @param {*} displayedYear
  */
-function _populateDayNumbers(displayedMonth, displayedYear) {
+const _populateDayNumbers = function(displayedMonth, displayedYear) {
   const daysArray = [];
   const dt = DateTime.local(displayedYear, displayedMonth, 1);
 
@@ -158,7 +152,7 @@ function _populateDayNumbers(displayedMonth, displayedYear) {
  * @param {*} lastDay
  * @param {*} tasks
  */
-function getCalendarMonthTasks(firstDay, lastDay, tasks) {
+const getCalendarMonthTasks = function(firstDay, lastDay, tasks) {
   state.calendarTasks = [];
   const monthTasks = [];
   const [monthStartYear, monthStartMonth, monthStartDay] = firstDay.split("-");

@@ -201,7 +201,7 @@ form label.required:after {
   padding: 0.3rem 2rem 0.3rem 0;
 }
 .myInfo-form {
-  border: 2px solid black;
+  border: 2px solid rgb(21, 36, 59);
   max-width: 460px;
   padding-left: 21px;
 }

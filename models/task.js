@@ -34,8 +34,8 @@ function _createTaskObject(task) {
     taskStartDisplay: taskStartDisplay,
     taskEndDisplay: taskEndDisplay,
     taskType: taskType,
-    taskCompletedDisplay: completedDateDisplay ? completedDateDisplay : null,
-    taskCompletedDate: taskCompletedDate ? taskCompletedDate : null,
+    taskCompletedDisplay: completedDateDisplay,
+    taskCompletedDate: taskCompletedDate,
   };
 }
 

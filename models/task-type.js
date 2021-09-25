@@ -5,6 +5,12 @@ const state = {
   selectedType: {},
 };
 
+
+/**
+ * 
+ * @param {*} type 
+ * @returns 
+ */
 const _createTypeObject = function (type) {
   return {
     typeID: type.id,
@@ -13,6 +19,10 @@ const _createTypeObject = function (type) {
   };
 };
 
+/**
+ * 
+ * @param {*} userID 
+ */
 const loadTaskTypes = async function (userID) {
   state.taskTypes = [];
   const data = await taskTypeQueries.getTaskTypes(userID);
@@ -23,6 +33,11 @@ const loadTaskTypes = async function (userID) {
   });
 };
 
+/**
+ * 
+ * @param {*} selectedTypeID 
+ * @returns 
+ */
 const loadSelectedType = function (selectedTypeID) {
   const selectedType = state.taskTypes.find(
     (type) => type.typeID === +selectedTypeID
@@ -36,6 +51,11 @@ const loadSelectedType = function (selectedTypeID) {
   state.selectedType = selectedType;
 };
 
+/**
+ * 
+ * @param {*} user_id 
+ * @param {*} type_description 
+ */
 const createNewType = async function (user_id, type_description) {
   const taskType = {
     user_id,
@@ -45,16 +65,27 @@ const createNewType = async function (user_id, type_description) {
   await taskTypeQueries.createTaskType(taskType);
 };
 
+/**
+ * 
+ * @param {*} typeID 
+ * @param {*} typeDescription 
+ */
 const updateType = async function (typeID, typeDescription) {
   await taskTypeQueries.updateTaskType(typeID, typeDescription);
   state.selectedType = {};
 };
 
+/**
+ * 
+ */
 const deleteType = async function () {
   await taskTypeQueries.deleteTaskType(state.selectedType.typeID);
   state.selectedType = {};
 };
 
+/**
+ * 
+ */
 const moveSelectedTaskTypeToTop = function () {
   // Taking the task's existing type and moving it to the top of the list because I could not
   // find a better way to do it while loading the modal and setting the existing type as selected.
@@ -65,6 +96,11 @@ const moveSelectedTaskTypeToTop = function () {
   state.taskTypes = removedType.concat(state.taskTypes);
 };
 
+/**
+ * 
+ * @param {*} data 
+ * @returns 
+ */
 const isValidData = function (data) {
   const errors = [];
 

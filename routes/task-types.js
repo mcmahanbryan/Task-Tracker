@@ -110,7 +110,11 @@ router.post("/submitDelete", checkAuthentication, async function (req, res) {
 module.exports = router;
 
 
-
+/**
+ * 
+ * @param {*} userTaskTypes 
+ * @returns 
+ */
 const _generateHtml = function(userTaskTypes) {
   let htmlText = '';
 
