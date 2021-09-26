@@ -1,4 +1,4 @@
-const taskQueries = require("../queries/task");
+const taskQueries = require("../data/task");
 
 const state = {
   tasks: [],

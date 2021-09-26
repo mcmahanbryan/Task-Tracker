@@ -1,4 +1,4 @@
-const calendarQueries = require("../queries/calendar");
+const calendarQueries = require("../data/calendar");
 const { DateTime } = require("luxon");
 
 const state = {

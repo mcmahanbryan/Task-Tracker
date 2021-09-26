@@ -1,4 +1,4 @@
-const userQueries = require("../queries/user");
+const userQueries = require("../data/user");
 
 const state = {
   users: [],

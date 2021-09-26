@@ -21,12 +21,10 @@ form label.required:after {
 .arrow-button-left {
   border-style: none;
   border-radius: 20%;
-  margin: 0 0 0 3rem;
 }
 .arrow-button-right {
   border-style: none;
   border-radius: 20%;
-  margin: 0 3 0 0rem;
 }
 .arrow-button:hover {
   color: #3a6294;

@@ -1,4 +1,4 @@
-const taskTypeQueries = require("../queries/task-type");
+const taskTypeQueries = require("../data/task-type");
 
 const state = {
   taskTypes: [],
