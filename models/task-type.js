@@ -5,11 +5,10 @@ const state = {
   selectedType: {},
 };
 
-
 /**
- * 
- * @param {*} type 
- * @returns 
+ * Private function to create a task type object based on a database row.
+ * @param {*} type Task Type row returned from the database.
+ * @returns Task Type object.
  */
 const _createTypeObject = function (type) {
   return {
@@ -20,8 +19,8 @@ const _createTypeObject = function (type) {
 };
 
 /**
- * 
- * @param {*} userID 
+ * Loads default task types and the active custom task types for the passed in user ID.
+ * @param {*} userID User ID making the request for their task types.
  */
 const loadTaskTypes = async function (userID) {
   state.taskTypes = [];
@@ -34,9 +33,8 @@ const loadTaskTypes = async function (userID) {
 };
 
 /**
- * 
- * @param {*} selectedTypeID 
- * @returns 
+ * Loads the task type and sets it to the selected type for the state.
+ * @param {*} selectedTypeID Task Type ID that is set for the selected task.
  */
 const loadSelectedType = function (selectedTypeID) {
   const selectedType = state.taskTypes.find(
@@ -52,9 +50,9 @@ const loadSelectedType = function (selectedTypeID) {
 };
 
 /**
- * 
- * @param {*} user_id 
- * @param {*} type_description 
+ * Creates a new task type in the database.
+ * @param {*} user_id User ID that is creating the custom task type.
+ * @param {*} type_description Task Type Description that is being created.
  */
 const createNewType = async function (user_id, type_description) {
   const taskType = {
@@ -66,9 +64,9 @@ const createNewType = async function (user_id, type_description) {
 };
 
 /**
- * 
- * @param {*} typeID 
- * @param {*} typeDescription 
+ * Updates a task type in the database.
+ * @param {*} typeID Task Type ID that is being updated.
+ * @param {*} typeDescription Task Type Description that the Task Type needs to be changed to.
  */
 const updateType = async function (typeID, typeDescription) {
   await taskTypeQueries.updateTaskType(typeID, typeDescription);
@@ -76,7 +74,7 @@ const updateType = async function (typeID, typeDescription) {
 };
 
 /**
- * 
+ * Deletes the selected task type.
  */
 const deleteType = async function () {
   await taskTypeQueries.deleteTaskType(state.selectedType.typeID);
@@ -84,7 +82,7 @@ const deleteType = async function () {
 };
 
 /**
- * 
+ * Moves the task's selected task type to the top of the drop-down.
  */
 const moveSelectedTaskTypeToTop = function () {
   // Taking the task's existing type and moving it to the top of the list because I could not
@@ -97,9 +95,9 @@ const moveSelectedTaskTypeToTop = function () {
 };
 
 /**
- * 
- * @param {*} data 
- * @returns 
+ * Checks the task type to validate the created type.
+ * @param {*} data Type Description that has been entered to be added.
+ * @returns Array with found validation errors.
  */
 const isValidData = function (data) {
   const errors = [];

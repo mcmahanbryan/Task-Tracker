@@ -27,6 +27,7 @@ router.get("/addTask", checkAuthentication, async function (req, res) {
   res.render("modals/addTask", {
     dateFormat: dateFormat,
     activeTypes: activeTypes,
+    displayValidationErrors: displayValidationErrors,
   });
 });
 
@@ -187,3 +188,14 @@ const _generateHtml = function (activeTasks) {
 
   return htmlText;
 }
+
+
+const displayValidationErrors = function (errors) {
+  errors.forEach(([field, text]) => {
+    const errorText = document.createElement('p');
+    errorText.innerText = text;
+    errorText.classList.add('error-text');
+    document.querySelector(`.${field}`).after(errorText);
+    document.querySelector(`.${field}`).classList.add('error-border');
+  })
+};
