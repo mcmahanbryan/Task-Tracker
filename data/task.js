@@ -26,7 +26,7 @@ con.connect((err) => {
 function getUserTask(taskID, completed = 0) {
   return new Promise(function (resolve, reject) {
     con.query(
-      `SELECT t.id as task_id, t.task_title, t.task_description, t.task_type_id, DATE_FORMAT(t.task_start, "%Y-%m-%d") 
+      `SELECT t.id as task_id, t.created_by, t.task_title, t.task_description, t.task_type_id, DATE_FORMAT(t.task_start, "%Y-%m-%d") 
       as task_start, DATE_FORMAT(t.task_end, "%Y-%m-%d") as task_end, DATE_FORMAT(t.task_start, "%m/%d/%Y") as task_start_display, 
       DATE_FORMAT(t.task_end, "%m/%d/%Y") as task_end_display, 
       ${

@@ -42,6 +42,7 @@ const calendarRouter = require("./routes/calendar");
 const taskTypesRouter = require("./routes/task-types");
 const myInfoRouter = require("./routes/my-info");
 const logoutRouter = require("./routes/logout");
+const unauthorizedRouter = require("./routes/unauthorized");
 
 app.use("/", loginRouter);
 app.use("/register", registerRouter);
@@ -52,5 +53,6 @@ app.use("/calendar", calendarRouter);
 app.use("/taskTypes", taskTypesRouter);
 app.use("/myInfo", myInfoRouter);
 app.use("/logout", logoutRouter);
+app.use("/unauthorized", unauthorizedRouter);
 
 app.listen(port, () => console.log("Listening at http://localhost:" + port));

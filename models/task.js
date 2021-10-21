@@ -6,6 +6,7 @@ const state = {
 };
 
 function _createTaskObject(task) {
+  const userID = task.created_by ? task.created_by : null;
   const taskID = task.task_id ? task.task_id : null;
   const taskTitle = task.task_title ? task.task_title : null;
   const taskDescription = task.task_description ? task.task_description : null;
@@ -25,6 +26,7 @@ function _createTaskObject(task) {
     : null;
 
   return {
+    userID: userID,
     taskID: taskID,
     taskTitle: taskTitle,
     taskDescription: taskDescription,

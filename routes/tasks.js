@@ -80,6 +80,12 @@ router.get("/:taskID/:from", checkAuthentication, async function (req, res) {
   const from = req.params.from;
 
   await taskModel.loadUserTask(selectedTaskID);
+
+  if (req.user.userID !== taskModel.state.selectedTask.userID) {
+    res.redirect("/unauthorized");
+    return;
+  }
+
   const selectedTask = taskModel.state.selectedTask;
   selectedTask.from = from;
 

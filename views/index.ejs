@@ -24,7 +24,7 @@
         </tbody>
       </table>
     </div>
-    <div id="openweathermap-widget-9" class="col-lg-6 weather"></div>
+    <div id="open-weather" class="col-lg-6 weather"></div>
   </div>
 </div>
 
@@ -65,21 +65,23 @@
 </script>
 
 <script>
-  window.myWidgetParam ? window.myWidgetParam : (window.myWidgetParam = []);
-  window.myWidgetParam.push({
-    id: 9,
-    cityid: "4402245",
-    appid: `<%- apiKey %>`,
-    units: "imperial",
-    containerid: "openweathermap-widget-9",
+  const key = `<%- apiKey %>`;
+  console.log(key);
+  $.ajax({
+    type:"POST",
+    url: `http://api.openweathermap.org/data/2.5/weather?id=4402245&appid=${key}&units=imperial`,
+    dataType: "json",
+    success: function (result) {
+      console.log(result);
+
+      const weatherHtml = `
+        <h6>${result.name}</h6>
+        <p>${result.weather[0].main}</p>
+        <p>Feels like: ${result.main.feels_like}</p>
+        <p>Actual temperature:  ${result.main.temp}</p>
+        `;
+
+      document.querySelector("#open-weather").innerHTML = weatherHtml;
+    }
   });
-  (function () {
-    var script = document.createElement("script");
-    script.async = true;
-    script.charset = "utf-8";
-    script.src =
-      "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(script, s);
-  })();
 </script>
