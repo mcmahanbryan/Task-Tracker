@@ -11,7 +11,6 @@ router.get("/", checkAuthentication, async function (req, res) {
 
   res.render("index", {
     htmlText: htmlText,
-    apiKey: process.env.OPEN_WEATHER_API,
   });
 });
 

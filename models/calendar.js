@@ -1,4 +1,4 @@
-const calendarQueries = require("../queries/calendar");
+const calendarQueries = require("../data/calendar");
 const { DateTime } = require("luxon");
 
 const state = {
@@ -41,9 +41,9 @@ const loadCurrentDate = function () {
 };
 
 /**
- *
- * @param {*} displayedMonth
- * @param {*} displayedYear
+ *  Loads the previous month from the currently displayed date and creates an array of days to populate the calendar.
+ * @param {*} displayedMonth The current month being displayed.
+ * @param {*} displayedYear The current year being displayed.
  */
 const previous = function(displayedMonth, displayedYear) {
   const currentDisplayedMonth = _monthList.findIndex(
@@ -81,9 +81,9 @@ const previous = function(displayedMonth, displayedYear) {
 }
 
 /**
- *
- * @param {*} displayedMonth
- * @param {*} displayedYear
+ * Loads the next month from the currently displayed date and creates an array of days to populate the calendar.
+ * @param {*} displayedMonth The current month being displayed.
+ * @param {*} displayedYear The current year being displayed.
  */
 const next = function(displayedMonth, displayedYear) {
   let currentDisplayedMonth = _monthList.findIndex(
@@ -116,17 +116,17 @@ const next = function(displayedMonth, displayedYear) {
 }
 
 /**
- *
- * @param {*} displayedMonth
- * @param {*} displayedYear
+ * Creates an array of the days in the month that needs to be displayed in the calendar.
+ * @param {*} displayedMonth The month number that needs to be displayed.
+ * @param {*} displayedYear The year number that needs to be displayed.
  */
 const _populateDayNumbers = function(displayedMonth, displayedYear) {
   const daysArray = [];
   const dt = DateTime.local(displayedYear, displayedMonth, 1);
 
-  const weekOneEmptyDays = dt.weekday;
-  if (weekOneEmptyDays !== 7) {
-    for (let i = 1; i <= weekOneEmptyDays; i++) {
+  const weekOneStartDay = dt.weekday;
+  if (weekOneStartDay !== 7) {
+    for (let i = 0; i < weekOneStartDay; i++) {
       daysArray.push(" ");
     }
   }
@@ -147,10 +147,10 @@ const _populateDayNumbers = function(displayedMonth, displayedYear) {
 }
 
 /**
- *
- * @param {*} firstDay
- * @param {*} lastDay
- * @param {*} tasks
+ *  Formats all of the calendar tasks for the month being displayed and sets them as the calendarTasks for the state.
+ * @param {*} firstDay A string for the first day of the displayed month in the format of YYYY-MM-DD.
+ * @param {*} lastDay A string for the last of the displayed month in the format of YYYY-MM-DD.
+ * @param {*} tasks An array of the user's active tasks for the month as pulled from the database.
  */
 const getCalendarMonthTasks = function(firstDay, lastDay, tasks) {
   state.calendarTasks = [];
@@ -200,7 +200,8 @@ const getCalendarMonthTasks = function(firstDay, lastDay, tasks) {
     );
 
     // Checks to see if the task end date is after the end of this month
-    // and sets the end day to the last day of the month if it is.
+    // and sets the end day to the last day of the month if it is (for calendar
+    // display purposes and does not change it in the database).
     if (taskEndDate > monthEndDate) {
       currentMonthEndDate = +monthEndDay;
     } else {
@@ -208,7 +209,8 @@ const getCalendarMonthTasks = function(firstDay, lastDay, tasks) {
     }
 
     // Checks to see if the task start date is before the first of this month
-    // and sets it to the first day of the month if it is.
+    // and sets it to the first day of the month if it is (for calendar display
+    // purposes and does not change it in the database).
     if (taskStartDate < monthStartDate) {
       currentMonthStartDate = 01;
     } else {
@@ -235,10 +237,10 @@ const getCalendarMonthTasks = function(firstDay, lastDay, tasks) {
 }
 
 /**
- *
- * @param {*} firstDay
- * @param {*} lastDay
- * @param {*} userID
+ * Gets the active tasks for the displayed month for a specific user.
+ * @param {*} firstDay A string for the first day of the displayed month in the format of YYYY-MM-DD.
+ * @param {*} lastDay A string for the last of the displayed month in the format of YYYY-MM-DD.
+ * @param {*} userID The user ID of the user whose active tasks need to be loaded.
  */
 const loadCalendarActiveTasks = async function (firstDay, lastDay, userID) {
   const data = await calendarQueries.getCalendarActiveTasks(

@@ -1,4 +1,4 @@
-const userQueries = require("../queries/user");
+const userQueries = require("../data/user");
 
 const state = {
   users: [],
@@ -25,6 +25,10 @@ function _createUserObject(user, requiredInfo) {
   }
 }
 
+/**
+ * 
+ * @param {*} requiredInfo 
+ */
 const loadAllUsers = async function (requiredInfo = "all") {
   state.users = [];
   const data = await userQueries.getAllUsers();
@@ -35,10 +39,20 @@ const loadAllUsers = async function (requiredInfo = "all") {
   });
 };
 
+/**
+ * 
+ * @param {*} userName 
+ * @param {*} hashedPassword 
+ */
 const createNewUser = async function (userName, hashedPassword) {
   await userQueries.createUser(userName, hashedPassword);
 };
 
+/**
+ * 
+ * @param {*} userInfo 
+ * @param {*} password 
+ */
 const updateUser = async function (userInfo, password) {
   await userQueries.updateUser(userInfo, password);
 };

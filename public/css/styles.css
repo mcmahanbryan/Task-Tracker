@@ -12,21 +12,17 @@ form label.required:after {
 #sideNavDay {
   padding-top: 2rem;
 }
-.active {
-  color: #fff;
-}
+
 .add-task-button {
   margin: 0 0 0.4rem 1rem;
 }
 .arrow-button-left {
   border-style: none;
   border-radius: 20%;
-  margin: 0 0 0 3rem;
 }
 .arrow-button-right {
   border-style: none;
   border-radius: 20%;
-  margin: 0 3 0 0rem;
 }
 .arrow-button:hover {
   color: #3a6294;
@@ -233,6 +229,16 @@ form label.required:after {
 .page-starter {
   margin-top: 7rem;
 }
+
+.pagination-nav {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.pagination-count {
+  color: white;
+}
+
 .right-button {
   padding: 1rem 0 1rem 20rem;
 }
@@ -243,7 +249,7 @@ form label.required:after {
 .scrollable-table {
   overflow-y: auto;
   height: 30rem;
-  padding-right: 0;
+  padding: 0;
 }
 .sidenav {
   width: 0;
@@ -262,6 +268,11 @@ form label.required:after {
 
 .target {
   color: #8c1d25;
+}
+
+.table-count {
+  text-align: center;
+  color: white;
 }
 
 .task-table {
@@ -387,9 +398,30 @@ form label.required:after {
   right: 0;
 }
 
-.weather {
-  padding-left: 10%;
-  padding-top: 2.5rem;
+.weather-title {
+  font-weight: bold;
+  margin-bottom: 6px; 
+}
+
+.weather-txt-area {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.weather-search-btn {
+  margin-left: 5px;
+  vertical-align: unset;
+}
+
+.weather-table-row {
+  padding-top: 0.4rem;
+  background-color: transparent !important;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  color: #fff;
 }
 
 .white-divider::before {

@@ -4,16 +4,28 @@ const { checkAuthentication } = require("../js/user-authentication");
 const taskModel = require("../models/task");
 const taskTypeModel = require("../models/task-type");
 const dateFormat = require("../js/date-format");
+const pagination = require("../js/pagination");
 
 
 /* Tasks GET
 ------------------------------------------------*/
 router.get("/", checkAuthentication, async function (req, res) {
   await taskModel.loadUsersActiveTasks(req.user.userID);
-  const htmlText = _generateHtml(taskModel.state.tasks);
+  taskModel.state.paginationPage = 1;
+  const paginationPage = taskModel.state.paginationPage;
+
+  // Create pagination array
+  const taskPaginationArray = pagination.createPaginationArray(taskModel.state.tasks);
+  
+  // Create pagination html based on the array
+  const tableHtml = _generateHtml(taskPaginationArray[taskModel.state.paginationPage - 1]);
+  const paginationHtml = pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
+  const paginationCountHtml = pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
 
   res.render("tasks", {
-    htmlText: htmlText,
+    tableHtml: tableHtml,
+    paginationHtml: paginationHtml,
+    paginationCountHtml: paginationCountHtml,
   });
 });
 
@@ -27,6 +39,7 @@ router.get("/addTask", checkAuthentication, async function (req, res) {
   res.render("modals/addTask", {
     dateFormat: dateFormat,
     activeTypes: activeTypes,
+    displayValidationErrors: displayValidationErrors,
   });
 });
 
@@ -79,6 +92,12 @@ router.get("/:taskID/:from", checkAuthentication, async function (req, res) {
   const from = req.params.from;
 
   await taskModel.loadUserTask(selectedTaskID);
+
+  if (req.user.userID !== taskModel.state.selectedTask.userID) {
+    res.redirect("/unauthorized");
+    return;
+  }
+
   const selectedTask = taskModel.state.selectedTask;
   selectedTask.from = from;
 
@@ -149,6 +168,30 @@ router.post("/deleteTask/submit", checkAuthentication, async function (req, res)
   res.send(htmlText);
 });
 
+/* Pagination POST
+------------------------------------------------*/
+router.post("/pagination", checkAuthentication, async function (req, res) {
+  const clickedBtn = req.body.clickedBtn;
+
+  if (clickedBtn === "Previous") {
+    taskModel.state.paginationPage -= 1;
+  } else if (clickedBtn === "Next") {
+    taskModel.state.paginationPage += 1;
+  } else {
+    taskModel.state.paginationPage = +clickedBtn;
+  }
+
+  const paginationPage = taskModel.state.paginationPage;
+
+  
+  const taskPaginationArray = await pagination.createPaginationArray(taskModel.state.tasks);
+  const tableHtml = await _generateHtml(taskPaginationArray[paginationPage - 1]);
+  const paginationHtml = await  pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
+  const paginationCountHtml = await pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
+
+  res.send({tableHtml, paginationHtml, paginationCountHtml});
+});
+
 module.exports = router;
 
 
@@ -187,3 +230,13 @@ const _generateHtml = function (activeTasks) {
 
   return htmlText;
 }
+
+const displayValidationErrors = function (errors) {
+  errors.forEach(([field, text]) => {
+    const errorText = document.createElement('p');
+    errorText.innerText = text;
+    errorText.classList.add('error-text');
+    document.querySelector(`.${field}`).after(errorText);
+    document.querySelector(`.${field}`).classList.add('error-border');
+  })
+};

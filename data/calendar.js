@@ -18,8 +18,8 @@ con.connect((err) => {
 
 /**
  * Gets all of the active tasks for the user from the database.
- * @param {Date} firstDay Format of YYYY/MM/DD and is the first day of the month.
- * @param {Date} lastDay Format of YYYY/MM/DD and is the last day of the month.
+ * @param {Date} firstDay Format of YYYY-MM-DD and is the first day of the month.
+ * @param {Date} lastDay Format of YYYY-MM-DD and is the last day of the month.
  * @param {Number} userID User ID of the user in the database.
  * @returns All active tasks for the month.
  */

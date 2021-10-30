@@ -16,10 +16,10 @@
     <table class="col-lg-12 task-table">
         <colgroup>
             <col span="1" style="width: 40%;">
-            <col span="1" style="width: 10%;">
             <col span="1" style="width: 15%;">
             <col span="1" style="width: 15%;">
-            <col span="1" style="width: 10%;">
+            <col span="1" style="width: 14%;">
+            <col span="1" style="width: 6%;">
         </colgroup>
         <thead>
         <tr>
@@ -34,6 +34,11 @@
         </tbody>
     </table>
     </div>
+    <nav>
+      <ul class="pagination pagination-nav justify-content-center">
+      </ul>
+      <div class="table-count"></div>
+    </nav>
 </div>
 
 <%- include('partials/footer') %>
@@ -41,10 +46,55 @@
 <!-- Populates the table body with active tasks
  -------------------------------------------------->
 <script>
-  const htmlText = `<%- htmlText %>`;
+  // Initial table load
+  const tableHtml = `<%- tableHtml %>`;
+  const paginationHtml = `<%- paginationHtml %>`;
+  const paginationCountHtml = `<%- paginationCountHtml %>`
   const taskTable = document.querySelector('.task-table-body');
-  taskTable.innerHTML = '';
-  taskTable.innerHTML = htmlText;
+  const pagination = document.querySelector('.pagination');
+  const taskTableCount = document.querySelector('.table-count');
+
+
+  updateHtml(tableHtml, paginationHtml, paginationCountHtml);
+  paginationBtnEventSetup()
+
+
+  function updateHtml(tableHtml, paginationHtml, paginationCountHtml) {
+    taskTable.innerHTML = '';
+    taskTable.innerHTML = tableHtml;
+    pagination.innerHTML = '';
+    pagination.innerHTML = paginationHtml;
+    taskTableCount.paginationCountHtml = '';
+    taskTableCount.innerHTML = paginationCountHtml;
+  }
+
+  function paginationBtnEventSetup() {
+    const paginationBtns = document.querySelectorAll(".page-item");
+
+    paginationBtns.forEach(btn => {
+      if (!btn.classList.contains("disabled")) {
+        btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const clicked = { "clickedBtn": e.target.innerText };
+        
+        $.ajax({
+        type:"POST",
+        url: "/tasks/pagination",
+        data: clicked,
+        dataType: "json",
+        success: function (result) {
+          const tableHtml = result.tableHtml;
+          const paginationHtml = result.paginationHtml;
+          const paginationCountHtml = result.paginationCountHtml;
+
+          updateHtml(tableHtml, paginationHtml, paginationCountHtml);
+          paginationBtnEventSetup()
+        }
+        });
+      });
+      }
+    })
+  }
 </script>
 
 

@@ -16,10 +16,11 @@
     <div class="modalFields input-padding">
       <label for="taskType" class="required">Task Type</label>
       </br>
-      <select name="taskType" class="taskType" required>
-      <% activeTypes.forEach(function(row){ %>
-      <option value=<%= row.typeID %>><%= row.typeDescription %></option>
-      <% }) %>
+      <select name="taskType" class="taskType" value="" required>
+        <option selected></option>
+        <% activeTypes.forEach(function(row){ %>
+          <option value=<%= row.typeID %>><%= row.typeDescription %></option>
+        <% }) %>
       </select>
     </div>
     <div class="modalFields inline input-padding">
@@ -54,31 +55,30 @@ const taskTable = document.querySelector('.task-table-body');
 submitBtn.addEventListener('click', (e) => {
   e.preventDefault();
 
+  // Removing any error message on submit in case they are fixing something and submitting again.
   const errorFields = document.querySelectorAll('p.error-text');
-    errorFields.forEach(field => {
-      field.previousElementSibling.classList.remove('error-border');
-      field.remove();
-    });
+  
+  errorFields.forEach(field => {
+    field.previousElementSibling.classList.remove('error-border');
+    field.remove();
+  })
     
-    const validationErrors = [];
 
-    if (!document.querySelector('.taskTitle').value) {
-      validationErrors.push(["taskTitle", "Please enter a task title"]);
-    }
-    if (!document.querySelector('.taskType').value) {
-      validationErrors.push(["taskType", "Please select a task type"]);
-    }
-    if (!document.querySelector('.startDate').value) {
-      validationErrors.push(["startDate", "Please enter a start date"]);
-    }
-    if (!document.querySelector('.endDate').value) {
-      validationErrors.push(["endDate", "Please enter an End Date"]);
-    }
-
-    if (validationErrors.flat(1).length > 0) {
-      displayValidationErrors(validationErrors);
-      return;
-    }
+  // Form input validation checks.
+  const validationErrors = [];
+  if (!document.querySelector('.taskTitle').value)
+    validationErrors.push(["taskTitle", "Please enter a task title"]);
+  if (!document.querySelector('.taskType').value) 
+    validationErrors.push(["taskType", "Please select a task type"]);
+  if (!document.querySelector('.startDate').value) 
+    validationErrors.push(["startDate", "Please enter a start date"]);
+  if (!document.querySelector('.endDate').value) 
+    validationErrors.push(["endDate", "Please enter an End Date"]);
+    
+  if (validationErrors.flat(1).length > 0) {
+    displayValidationErrors(validationErrors);
+    return;
+  }
 
   const taskData = {
     "taskTitle": document.querySelector('.taskTitle').value,
@@ -88,6 +88,7 @@ submitBtn.addEventListener('click', (e) => {
     "taskDescription": document.querySelector('.taskDescription').value,
   };
 
+  // Submit POST
   $.ajax({
     type:"POST",
     url: "/tasks/submitTask",
@@ -115,15 +116,15 @@ submitBtn.addEventListener('click', (e) => {
       closeBtn.click();
     }
   });
-})
+});
 
 const displayValidationErrors = function (errors) {
     errors.forEach(([field, text]) => {
-        const errorText = document.createElement('p');
-        errorText.innerText = text;
-        errorText.classList.add('error-text');
-        document.querySelector(`.${field}`).after(errorText);
-        document.querySelector(`.${field}`).classList.add('error-border');
-      })
-  }
+      const errorText = document.createElement('p');
+      errorText.innerText = text;
+      errorText.classList.add('error-text');
+      document.querySelector(`.${field}`).after(errorText);
+      document.querySelector(`.${field}`).classList.add('error-border');
+    })
+  };
 </script>

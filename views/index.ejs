@@ -24,7 +24,19 @@
         </tbody>
       </table>
     </div>
-    <div id="openweathermap-widget-9" class="col-lg-6 weather"></div>
+    <div class="col-lg-1"></div>
+    <div id="open-weather" class="col-lg-5 col-sm-12 weather">
+      <p class="today-bigger-headings today-title weather-title">Today's Weather</p>
+      <div class="weather-search">
+        <input type="text" class="weather-txt-area" maxlength="30"  size="25" placeholder="City, State Abbrev">
+        <button onclick="getWeather()" class="btn btn-primary weather-search-btn">Search</button>
+        <br>
+        <br>
+        <table>
+          <tbody class="weather-display"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -64,22 +76,41 @@
   });
 </script>
 
+<!-- Weather API
+  -------------------------------------------------->
 <script>
-  window.myWidgetParam ? window.myWidgetParam : (window.myWidgetParam = []);
-  window.myWidgetParam.push({
-    id: 9,
-    cityid: "4402245",
-    appid: `<%- apiKey %>`,
-    units: "imperial",
-    containerid: "openweathermap-widget-9",
-  });
-  (function () {
-    var script = document.createElement("script");
-    script.async = true;
-    script.charset = "utf-8";
-    script.src =
-      "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(script, s);
-  })();
+  const weatherDisplay = document.querySelector(".weather-display");
+  const locationInput = document.querySelector(".weather-txt-area");
+  const weatherSearchBtn = document.querySelector(".weather-search-btn");
+
+  locationInput.addEventListener("keydown", e => {
+    if(e.code === "Enter") {
+      weatherSearchBtn.click();
+    }
+  })
+
+  const getWeather = function() {
+    if (!locationInput.value.includes(",")) {
+      weatherDisplay.style.color = "darkred";
+      weatherDisplay.innerHTML = 'Invalid location; please enter "City, State Abbrev."';
+      locationInput.value = "";
+      return;
+    }
+
+    const [cityInput, stateInput] = locationInput.value.split(",");
+    const city = cityInput.trim();
+    const state = stateInput.trim();
+    const weatherData = { 'weatherLocation': `${city},US-${state}` };
+
+    $.ajax({
+    type:"POST",
+    url: "/weather/",
+    data: weatherData,
+    dataType: "json",
+    success: function (result) {
+      weatherDisplay.innerHTML = result.weatherHtml;
+      locationInput.value = "";
+    }
+    });
+  }
 </script>
