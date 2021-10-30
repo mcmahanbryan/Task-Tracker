@@ -3,6 +3,7 @@ const taskQueries = require("../data/task");
 const state = {
   tasks: [],
   selectedTask: {},
+  paginationPage: 1,
 };
 
 function _createTaskObject(task) {
