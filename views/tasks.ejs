@@ -46,34 +46,45 @@
 <!-- Populates the table body with active tasks
  -------------------------------------------------->
 <script>
-  // Initial table load
-  const tableHtml = `<%- tableHtml %>`;
-  const paginationHtml = `<%- paginationHtml %>`;
-  const paginationCountHtml = `<%- paginationCountHtml %>`
-  const taskTable = document.querySelector('.task-table-body');
-  const pagination = document.querySelector('.pagination');
-  const taskTableCount = document.querySelector('.table-count');
+const tableHtml = `<%- tableHtml %>`;
+const paginationHtml = `<%- paginationHtml %>`;
+const paginationCountHtml = `<%- paginationCountHtml %>`
+const taskTable = document.querySelector('.task-table-body');
+const pagination = document.querySelector('.pagination');
+const taskTableCount = document.querySelector('.table-count');
+
+// Initial table load.
+updateHtml(tableHtml, paginationHtml, paginationCountHtml);
+paginationBtnEventSetup();
 
 
-  updateHtml(tableHtml, paginationHtml, paginationCountHtml);
-  paginationBtnEventSetup()
+// Updates the task table and table pagination html.
+function updateHtml(tableHtml, paginationHtml, paginationCountHtml) {
+  taskTable.innerHTML = '';
+  taskTable.innerHTML = tableHtml;
+  pagination.innerHTML = '';
+  pagination.innerHTML = paginationHtml;
+  taskTableCount.paginationCountHtml = '';
+  taskTableCount.innerHTML = paginationCountHtml;
 
+  $('.edit-modal').on('click', function(e){
+    e.preventDefault();
+    $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+  });
 
-  function updateHtml(tableHtml, paginationHtml, paginationCountHtml) {
-    taskTable.innerHTML = '';
-    taskTable.innerHTML = tableHtml;
-    pagination.innerHTML = '';
-    pagination.innerHTML = paginationHtml;
-    taskTableCount.paginationCountHtml = '';
-    taskTableCount.innerHTML = paginationCountHtml;
-  }
+  $('.delete-modal').on('click', function(e){
+    e.preventDefault();
+    $('#deleteTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
+  });
+}
 
-  function paginationBtnEventSetup() {
-    const paginationBtns = document.querySelectorAll(".page-item");
+// Creates the click events on all the pagination buttons.
+function paginationBtnEventSetup() {
+  const paginationBtns = document.querySelectorAll(".page-item");
 
-    paginationBtns.forEach(btn => {
-      if (!btn.classList.contains("disabled")) {
-        btn.addEventListener("click", (e) => {
+  paginationBtns.forEach(btn => {
+    if (!btn.classList.contains("disabled")) {
+      btn.addEventListener("click", (e) => {
         e.preventDefault();
         const clicked = { "clickedBtn": e.target.innerText };
         
@@ -90,11 +101,11 @@
           updateHtml(tableHtml, paginationHtml, paginationCountHtml);
           paginationBtnEventSetup()
         }
-        });
       });
-      }
-    })
-  }
+      });
+    }
+  })
+}
 </script>
 
 

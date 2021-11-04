@@ -5,7 +5,6 @@
 <div class="container page-starter">
     <div class="row">
         <div class="col-lg-12">
-            <a href="./modals/addTask" class="add-modal add-task-button btn btn-primary">Add New Task</a>
             <a href="./tasks" class="add-task-button btn btn-success">View Active</a>
         </div>
     </div>
@@ -45,21 +44,6 @@
   const taskTable = document.querySelector('.task-table-body');
   taskTable.innerHTML = '';
   taskTable.innerHTML = htmlText;
-</script>
-
-<!-- Add New Task Modal 
- -------------------------------------------------->
-<div id="addNewTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-      </div>
-    </div>
-  </div>
-<script>
-$('.add-modal').on('click', function(e){
-      e.preventDefault();
-      $('#addNewTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-    });
 </script>
 
 <!-- Edit Completed Task Modal 

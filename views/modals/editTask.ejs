@@ -8,17 +8,17 @@
         </button>
     </div>
     <div class="modal-body body-color">
-      <input type="number" name="selectedID" class="selectedID" value="<%- selectedTask.taskID %>" hidden>
-      <input type="number" name="from" class="from" value="<%- selectedTask.from %>" hidden>
+      <input type="number" name="selectedID" class="editSelectedID" value="<%- selectedTask.taskID %>" hidden>
+      <input type="number" name="from" class="editFrom" value="<%- selectedTask.from %>" hidden>
       <div class="modalFields">
         <label for="taskTitle" class="required">Task Title</label> 
         </br>
-        <input type="text" class="taskTitle" name="taskTitle" maxlength="100" size="56" required value=<%- selectedTask.taskTitle %>>
+        <input type="text" class="edittaskTitle" name="taskTitle" maxlength="100" size="56" required value="<%- selectedTask.taskTitle %>">
       </div>
       <div class="modalFields input-padding">
         <label for="taskType" class="required">Task Type</label>
         </br>
-        <select name="taskType" class="taskType" required>
+        <select name="taskType" class="editTaskType" required>
         <% activeTypes.forEach(function(row){ %>
         <option id=<%- row.typeID %> value=<%- row.typeID %>><%- row.typeDescription %></option>
         <% }) %>
@@ -27,33 +27,33 @@
       <div class="modalFields inline input-padding">
         <label for="startDate" class="required">Start Date</label>
         <br>
-        <input type="date" class="startDate" required name="startDate" value="<%- selectedTask.taskStart %>" pattern="\d{2}-\d{2}-\d{4}">
+        <input type="date" class="editStartDate" required name="startDate" value="<%- selectedTask.taskStart %>" pattern="\d{2}-\d{2}-\d{4}">
       </div>
       <div class="modalFields inline input-padding">
         <label for="endDate" class="required">End Date</label>
         <br>
-        <input type="date" class="endDate" required name="endDate" value="<%- selectedTask.taskEnd %>" pattern="\d{2}-\d{2}-\d{4}">
+        <input type="date" class="editEndDate" required name="endDate" value="<%- selectedTask.taskEnd %>" pattern="\d{2}-\d{2}-\d{4}">
       </div>
       <br>
       <div class="modalFields">
         <label for="taskDescription">Task Description</label>
         <br>
-        <textarea name="taskDescription" class="taskDescription" cols="59" rows="5" maxlength="500"><%- selectedTask.taskDescription %></textarea>
+        <textarea name="taskDescription" class="editTaskDescription" cols="59" rows="5" maxlength="500"><%- selectedTask.taskDescription %></textarea>
       </div>
     </div>
     <div class="modal-footer footer-color no-border">
       <div class="complete-button-padding">
       <button type="submit" name="complete" class="btn btn-success submit-button">Complete</button>
       </div>
-      <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Close</button>
-      <button type="submit" name="save" class="btn btn-primary submit-button">Save</button>
+      <button type="button" class="btn btn-secondary edit-close-button" data-dismiss="modal">Close</button>
+      <button type="submit" name="save" class="btn btn-primary edit-submit-button">Save</button>
     </div>
   </form>
 
 
 <script>
-  const submitBtns = document.querySelectorAll('.submit-button');
-  const closeBtn = document.querySelector('.close-button');
+  const submitBtns = document.querySelectorAll('.edit-submit-button');
+  const closeBtn = document.querySelector('.edit-close-button');
   const taskTable = document.querySelector('.task-table-body');
     
   submitBtns.forEach(button => {
@@ -68,41 +68,37 @@
     
       const validationErrors = [];
 
-      if (!document.querySelector('.taskTitle').value) {
-        validationErrors.push(["taskTitle", "Please enter a task title"]);
-      }
-      if (!document.querySelector('.taskType').value) {
-        validationErrors.push(["taskType", "Please select a task type"]);
-      }
-      if (!document.querySelector('.startDate').value) {
-        validationErrors.push(["startDate", "Please enter a start date"]);
-      }
-      if (!document.querySelector('.endDate').value) {
-        validationErrors.push(["endDate", "Please enter an End Date"]);
-      }
+      if (!document.querySelector('.editTaskTitle').value)
+        validationErrors.push(["editTaskTitle", "Please enter a task title"]);
+      if (!document.querySelector('.editTaskType').value)
+        validationErrors.push(["editTaskType", "Please select a task type"]);
+      if (!document.querySelector('.editStartDate').value)
+        validationErrors.push(["editStartDate", "Please enter a start date"]);
+      if (!document.querySelector('.editEndDate').value)
+        validationErrors.push(["editEndDate", "Please enter an End Date"]);
 
       if (validationErrors.flat(1).length > 0) {
         displayValidationErrors(validationErrors);
         return;
       }
 
-      const complete = (event.target.innerHTML === 'Save') ? 0 : 1;
-      const postUrl = (+document.querySelector('.from').value === 0) 
+      const complete = (e.target.innerHTML === 'Save') ? 0 : 1;
+      const postUrl = (+document.querySelector('.editFrom').value === 0) 
         ? "/dashboard/submitUpdatedTask" 
-        : (+document.querySelector('.from').value === 1) 
+        : (+document.querySelector('.editFrom').value === 1) 
           ? "/tasks/submitUpdatedTask" 
           : "/calendar/submitUpdatedTask";
       
       const taskData = {
-        "selectedID": document.querySelector('.selectedID').value,
-        "taskTitle": document.querySelector('.taskTitle').value,
-        "taskType": document.querySelector('.taskType').value,
-        "startDate": document.querySelector('.startDate').value,
-        "endDate": document.querySelector('.endDate').value,
-        "taskDescription": document.querySelector('.taskDescription').value,
+        "selectedID": document.querySelector('.editSelectedID').value,
+        "taskTitle": document.querySelector('.editTaskTitle').value,
+        "taskType": document.querySelector('.editTaskType').value,
+        "startDate": document.querySelector('.editStartDate').value,
+        "endDate": document.querySelector('.editEndDate').value,
+        "taskDescription": document.querySelector('.editTaskDescription').value,
         "complete": complete,
       };
-      
+
       $.ajax({
         type:"POST",
         url: postUrl,
@@ -114,9 +110,15 @@
             return;
           }
 
-          taskTable.innerHTML = '';
-          taskTable.innerHTML = result.htmlText;
+          if (postUrl.includes('tasks')) {
+            updateHtml(result.tableHtml, result.paginationHtml, result.paginationCountHtml);
+            paginationBtnEventSetup()
+          } else {
+            taskTable.innerHTML = '';
+            taskTable.innerHTML = result.htmlText;
+          }
 
+          // Re-populates the calendar side nav if edited there.
           if (postUrl.includes('calendar')) {
             const [, dayPortion] = sideNavHeader.innerHTML.split(' ');
             const selectedDay = {"selectedDay": dayPortion};
@@ -144,17 +146,12 @@
                 }
             });
           }
-    
+
           $('.edit-modal').on('click', function(e){
             e.preventDefault();
             $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
           });
-    
-          $('.delete-modal').on('click', function(e){
-            e.preventDefault();
-            $('#deleteTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-          });
-    
+
           closeBtn.click();
         }
       });

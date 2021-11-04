@@ -5,6 +5,7 @@ const taskModel = require("../models/task");
 const taskTypeModel = require("../models/task-type");
 const dateFormat = require("../js/date-format");
 const pagination = require("../js/pagination");
+const task = require("../data/task");
 
 
 /* Tasks GET
@@ -39,7 +40,6 @@ router.get("/addTask", checkAuthentication, async function (req, res) {
   res.render("modals/addTask", {
     dateFormat: dateFormat,
     activeTypes: activeTypes,
-    displayValidationErrors: displayValidationErrors,
   });
 });
 
@@ -64,7 +64,9 @@ router.post("/submitTask", checkAuthentication, async function (req, res) {
 
   const responseData = {
     errors: [],
-    htmlText: '',
+    tableHtml: '',
+    paginationHtml: '',
+    paginationCountHtml: '',
   };
 
   const dataErrors = taskModel.isValidData(taskInfo);
@@ -78,7 +80,13 @@ router.post("/submitTask", checkAuthentication, async function (req, res) {
   } else {
     await taskModel.createNewTask(taskInfo);
     await taskModel.loadUsersActiveTasks(req.user.userID);
-    responseData.htmlText = _generateHtml(taskModel.state.tasks);
+
+    const paginationPage = taskModel.state.paginationPage;
+    const taskPaginationArray = pagination.createPaginationArray(taskModel.state.tasks);
+    
+    responseData.tableHtml = _generateHtml(taskPaginationArray[taskModel.state.paginationPage - 1]);
+    responseData.paginationHtml = pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
+    responseData.paginationCountHtml = pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
 
     res.send(responseData);
   }
@@ -127,11 +135,13 @@ router.post("/submitUpdatedTask", checkAuthentication, async function (req, res)
 
   const responseData = {
     errors: [],
-    htmlText: '',
+    tableHtml: '',
+    paginationHtml: '',
+    paginationCountHtml: '',
   };
 
   const dataErrors = taskModel.isValidData(newTaskInfo);
-
+  
   if (dataErrors.flat(1).length > 0) {
     dataErrors.forEach(error => {
       responseData.errors.push(error);
@@ -141,6 +151,12 @@ router.post("/submitUpdatedTask", checkAuthentication, async function (req, res)
   } else {
     await taskModel.updateUserTask(newTaskInfo);
     await taskModel.loadUsersActiveTasks(req.user.userID);
+
+    const paginationPage = taskModel.state.paginationPage;
+    const taskPaginationArray = pagination.createPaginationArray(taskModel.state.tasks);
+    responseData.tableHtml = _generateHtml(taskPaginationArray[taskModel.state.paginationPage - 1]);
+    responseData.paginationHtml = pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
+    responseData.paginationCountHtml = pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
     responseData.htmlText = _generateHtml(taskModel.state.tasks);
   
     res.send(responseData);
@@ -160,12 +176,28 @@ router.get("/:taskID/deleteTask/confirm", checkAuthentication, async function (r
 /* Delete Task Modal POST
 ------------------------------------------------*/
 router.post("/deleteTask/submit", checkAuthentication, async function (req, res) {
-  const selectedTaskID = taskModel.state.selectedTask.taskID;
-  await taskModel.deleteNewTask(selectedTaskID);
+  await taskModel.deleteNewTask(taskModel.state.selectedTask.taskID);
   await taskModel.loadUsersActiveTasks(req.user.userID);
-  const htmlText = _generateHtml(taskModel.state.tasks);
+  const taskPaginationArray = pagination.createPaginationArray(taskModel.state.tasks);
+  
+  // If a deletion reduces the need of a page, it will set the current page to the last page.
+  if (taskPaginationArray.length < taskModel.state.paginationPage) {
+    taskModel.state.paginationPage = taskPaginationArray.length;
+  }
 
-  res.send(htmlText);
+  const paginationPage = taskModel.state.paginationPage;
+
+  const responseData = {
+    tableHtml: '',
+    paginationHtml: '',
+    paginationCountHtml: '',
+  };
+  
+  responseData.tableHtml = _generateHtml(taskPaginationArray[taskModel.state.paginationPage - 1]);
+  responseData.paginationHtml = pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
+  responseData.paginationCountHtml = pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
+
+  res.send(responseData);
 });
 
 /* Pagination POST
@@ -182,11 +214,9 @@ router.post("/pagination", checkAuthentication, async function (req, res) {
   }
 
   const paginationPage = taskModel.state.paginationPage;
-
-  
   const taskPaginationArray = await pagination.createPaginationArray(taskModel.state.tasks);
   const tableHtml = await _generateHtml(taskPaginationArray[paginationPage - 1]);
-  const paginationHtml = await  pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
+  const paginationHtml = await pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
   const paginationCountHtml = await pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
 
   res.send({tableHtml, paginationHtml, paginationCountHtml});
@@ -230,13 +260,3 @@ const _generateHtml = function (activeTasks) {
 
   return htmlText;
 }
-
-const displayValidationErrors = function (errors) {
-  errors.forEach(([field, text]) => {
-    const errorText = document.createElement('p');
-    errorText.innerText = text;
-    errorText.classList.add('error-text');
-    document.querySelector(`.${field}`).after(errorText);
-    document.querySelector(`.${field}`).classList.add('error-border');
-  })
-};

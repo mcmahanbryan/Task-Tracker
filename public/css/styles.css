@@ -414,14 +414,13 @@ form label.required:after {
   vertical-align: unset;
 }
 
-.weather-table-row {
-  padding-top: 0.4rem;
-  background-color: transparent !important;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-  border-bottom: none;
+.weather-table{
   color: #fff;
+}
+
+.weather-table-header {
+  border-bottom: solid #fff 1px;
+  font-size: 20px;
 }
 
 .white-divider::before {

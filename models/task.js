@@ -68,7 +68,7 @@ const loadUserTask = async function (taskID, completed = 0) {
   data.forEach((taskData) => {
     task = _createTaskObject(taskData);
   });
-
+  
   state.selectedTask = task;
 };
 

@@ -1,52 +1,41 @@
 <!-- Delete Task Modal 
  -------------------------------------------------->
- <form class="no-margin">
-    <div class="modal-header header no-border">
-      <h5 class="modal-title white-text" id="deleteTaskModalTitle">Delete Task</h5>
-        <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+<form class="no-margin">
+  <div class="modal-header header no-border">
+    <h5 class="modal-title white-text" id="deleteTaskModalTitle">Delete Task</h5>
+    <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body body-color">
+    <div class="modalFields">
+      <p class="bottom-spacing white-text">Are you sure you want to delete the <strong><%- taskInfo.taskTitle %></strong> task?</p>
     </div>
-    <div class="modal-body body-color">
-      <div class="modalFields">
-        <p class="bottom-spacing white-text">Are you sure you want to delete the <strong><%- taskInfo.taskTitle %></strong> task?</p>
-      </div>
-    </div>
-    <div class="modal-footer footer-color no-border">
-      <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Close</button>
-      <button type="submit" class="btn btn-danger submit-button">Delete</button>
-    </div>
-  </form>
+  </div>
+  <div class="modal-footer footer-color no-border">
+    <button type="button" class="btn btn-secondary close-delete" data-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-danger submit-delete">Delete</button>
+  </div>
+</form>
   
 
-  <script>
-    const submitBtn = document.querySelector('.submit-button');
-    const closeBtn = document.querySelector('.close-button');
-    const taskTable = document.querySelector('.task-table-body');
-    
-    submitBtn.addEventListener('click', (e) => {   
-      e.preventDefault();
-
-      $.ajax({
-        type:"POST",
-        url: "/tasks/deleteTask/submit",
-        dataType: "html",
-        success: function(result) {
-          taskTable.innerHTML = '';
-          taskTable.innerHTML = result;
-    
-          $('.edit-modal').on('click', function(e){
-            e.preventDefault();
-            $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-          });
-    
-          $('.delete-modal').on('click', function(e){
-            e.preventDefault();
-            $('#deleteTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-          });
-    
-          closeBtn.click();
-        }
-      });
+<script>
+  const closeBtn = document.querySelector('.close-delete');
+  const taskTable = document.querySelector('.task-table-body');
+  const submitBtn = document.querySelector('.submit-delete');
+  
+  submitBtn.addEventListener('click', (e) => {   
+    e.preventDefault();
+    $.ajax({
+      type:"POST",
+      url: "/tasks/deleteTask/submit",
+      dataType: "json",
+      success: function(result) {
+        updateHtml(result.tableHtml, result.paginationHtml, result.paginationCountHtml);
+        paginationBtnEventSetup()
+        closeBtn.click();
+      }
     });
-    </script>
+  });
+
+</script>

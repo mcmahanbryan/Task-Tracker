@@ -57,7 +57,6 @@ submitBtn.addEventListener('click', (e) => {
 
   // Removing any error message on submit in case they are fixing something and submitting again.
   const errorFields = document.querySelectorAll('p.error-text');
-  
   errorFields.forEach(field => {
     field.previousElementSibling.classList.remove('error-border');
     field.remove();
@@ -67,11 +66,11 @@ submitBtn.addEventListener('click', (e) => {
   // Form input validation checks.
   const validationErrors = [];
   if (!document.querySelector('.taskTitle').value)
-    validationErrors.push(["taskTitle", "Please enter a task title"]);
+    validationErrors.push(["taskTitle", "Please enter a Task Title"]);
   if (!document.querySelector('.taskType').value) 
-    validationErrors.push(["taskType", "Please select a task type"]);
+    validationErrors.push(["taskType", "Please select a Task Type"]);
   if (!document.querySelector('.startDate').value) 
-    validationErrors.push(["startDate", "Please enter a start date"]);
+    validationErrors.push(["startDate", "Please enter a Start Date"]);
   if (!document.querySelector('.endDate').value) 
     validationErrors.push(["endDate", "Please enter an End Date"]);
     
@@ -100,18 +99,8 @@ submitBtn.addEventListener('click', (e) => {
         return;
       }
 
-      taskTable.innerHTML = '';
-      taskTable.innerHTML = result.htmlText;
-
-      $('.edit-modal').on('click', function(e){
-        e.preventDefault();
-        $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-      });
-
-      $('.delete-modal').on('click', function(e){
-        e.preventDefault();
-        $('#deleteTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
-      });
+      updateHtml(result.tableHtml, result.paginationHtml, result.paginationCountHtml);
+      paginationBtnEventSetup()
 
       closeBtn.click();
     }
@@ -119,12 +108,12 @@ submitBtn.addEventListener('click', (e) => {
 });
 
 const displayValidationErrors = function (errors) {
-    errors.forEach(([field, text]) => {
-      const errorText = document.createElement('p');
-      errorText.innerText = text;
-      errorText.classList.add('error-text');
-      document.querySelector(`.${field}`).after(errorText);
-      document.querySelector(`.${field}`).classList.add('error-border');
-    })
-  };
+  errors.forEach(([field, text]) => {
+    const errorText = document.createElement('p');
+    errorText.innerText = text;
+    errorText.classList.add('error-text');
+    document.querySelector(`.${field}`).after(errorText);
+    document.querySelector(`.${field}`).classList.add('error-border');
+  })
+};
 </script>

@@ -32,7 +32,7 @@
         <button onclick="getWeather()" class="btn btn-primary weather-search-btn">Search</button>
         <br>
         <br>
-        <table>
+        <table class="weather-table">
           <tbody class="weather-display"></tbody>
         </table>
       </div>
@@ -91,8 +91,10 @@
 
   const getWeather = function() {
     if (!locationInput.value.includes(",")) {
-      weatherDisplay.style.color = "darkred";
-      weatherDisplay.innerHTML = 'Invalid location; please enter "City, State Abbrev."';
+      const errorText = document.createElement('p');
+      errorText.style.color = "darkred";
+      errorText.innerHTML = 'Invalid location; please enter "City, State Abbrev."';
+      weatherDisplay.appendChild(errorText);
       locationInput.value = "";
       return;
     }

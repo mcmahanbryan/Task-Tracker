@@ -20,21 +20,21 @@ router.post("/", async function (req, res) {
         let json = await response.json();
     
         weatherHtml = `
-        <tr class="weather-table-row">
+        <tr class="weather-table-header">
             <td>${json.name}, ${state}</td>
         </tr>
-        <tr class="weather-table-row">
+        <tr>
             <td>${json.weather[0].main}</td>
         </tr>
-        <tr class="weather-table-row">
-            <td>Feels like: ${json.main.feels_like}</td>
+        <tr>
+            <td>Temperature:  ${json.main.temp}</td>
         </tr>
-        <tr class="weather-table-row">
-            <td>Actual temperature:  ${json.main.temp}</td>
+        <tr>
+            <td>Feels like: ${json.main.feels_like}</td>
         </tr>
         `;
     } else {
-        weatherHtml = ` <tr class="weather-table-row"><p>Error: ${response.status} : ${response.statusText}</p></tr>`;
+        weatherHtml = ` <tr><p>Error: ${response.status} : ${response.statusText}</p></tr>`;
     }
 
     const responseData = {
