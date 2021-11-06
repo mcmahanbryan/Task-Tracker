@@ -80,6 +80,7 @@
     const calendarBody = document.querySelector(".task-table-body");
     calendarBody.innerHTML = '';
     calendarBody.innerHTML = htmlText;
+    populateSideNavSetup();
 </script>
 
 
@@ -87,19 +88,17 @@
     -------------------------------------------------->
 <div id="editTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-      </div>
+      <div class="modal-content"></div>
     </div>
-  </div>
+</div>
 
   <!-- Edit Completed Task Modal 
     -------------------------------------------------->
 <div id="editCompletedTaskModal" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-      </div>
+      <div class="modal-content"></div>
     </div>
-  </div>
+</div>
 
 <script> 
     function moveNav() {

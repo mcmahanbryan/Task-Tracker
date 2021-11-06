@@ -143,6 +143,8 @@
                         e.preventDefault();
                         $('#editTaskModal').modal('show').find('.modal-content').load($(this).attr('href'));
                     });
+
+                    populateSideNavSetup();
                 }
             });
           }

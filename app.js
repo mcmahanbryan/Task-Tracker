@@ -49,7 +49,7 @@ app.use("/", loginRouter);
 app.use("/register", registerRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/tasks", taskRouter);
-app.use("/viewCompleted", completedTasksRouter);
+app.use("/viewcompleted", completedTasksRouter);
 app.use("/calendar", calendarRouter);
 app.use("/taskTypes", taskTypesRouter);
 app.use("/myInfo", myInfoRouter);
