@@ -18,6 +18,8 @@ router.post("/", async function (req, res) {
 
     if (response.ok) {
         let json = await response.json();
+        const mainTemp = Math.round(json.main.temp);
+        const feelsLikeTemp = Math.round(json.main.feels_like);
     
         weatherHtml = `
         <tr class="weather-table-header">
@@ -27,10 +29,10 @@ router.post("/", async function (req, res) {
             <td>${json.weather[0].main}</td>
         </tr>
         <tr>
-            <td>Temperature:  ${json.main.temp}</td>
+            <td>Temperature: ${mainTemp}°F</td>
         </tr>
         <tr>
-            <td>Feels like: ${json.main.feels_like}</td>
+            <td>Feels like: ${feelsLikeTemp}°F</td>
         </tr>
         `;
     } else {

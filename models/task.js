@@ -6,7 +6,12 @@ const state = {
   paginationPage: 1,
 };
 
-function _createTaskObject(task) {
+/**
+ * 
+ * @param {*} task 
+ * @returns 
+ */
+const _createTaskObject = function(task) {
   const userID = task.created_by ? task.created_by : null;
   const taskID = task.task_id ? task.task_id : null;
   const taskTitle = task.task_title ? task.task_title : null;
@@ -42,6 +47,10 @@ function _createTaskObject(task) {
   };
 }
 
+/**
+ * 
+ * @param {*} userID 
+ */
 const loadUsersTodayTasks = async function (userID) {
   state.tasks = [];
   const data = await taskQueries.getUsersTodayTasks(userID);
@@ -52,6 +61,11 @@ const loadUsersTodayTasks = async function (userID) {
   });
 };
 
+/**
+ * 
+ * @param {*} userID 
+ * @param {*} completed 
+ */
 const loadUsersActiveTasks = async function (userID, completed = 0) {
   state.tasks = [];
   const data = await taskQueries.getUsersActiveTasks(userID, completed);
@@ -62,6 +76,11 @@ const loadUsersActiveTasks = async function (userID, completed = 0) {
   });
 };
 
+/**
+ * 
+ * @param {*} taskID 
+ * @param {*} completed 
+ */
 const loadUserTask = async function (taskID, completed = 0) {
   let task = {};
   const data = await taskQueries.getUserTask(+taskID, completed);
@@ -72,25 +91,42 @@ const loadUserTask = async function (taskID, completed = 0) {
   state.selectedTask = task;
 };
 
+/**
+ * 
+ * @param {*} taskInfo 
+ */
 const createNewTask = async function (taskInfo) {
   await taskQueries.createNewTask(taskInfo);
 };
 
+/**
+ * 
+ * @param {*} taskID 
+ */
 const deleteNewTask = async function (taskID) {
   await taskQueries.deleteUserTask(taskID);
   state.selectedTask = {};
 };
 
+/**
+ * 
+ * @param {*} taskInfo 
+ */
 const updateUserTask = async function (taskInfo) {
   await taskQueries.updateUserTask(taskInfo);
   state.selectedTask = {};
 };
 
+/**
+ * 
+ * @param {*} data 
+ * @returns 
+ */
 const isValidData = function (data) {
   const errors = [];
 
   if (data.task_start > data.task_end) {
-      errors.push(["startDate", "Must start before End Date"]);
+      errors.push(["startDate", "Start Date is after End Date"]);
     };
 
     return errors;

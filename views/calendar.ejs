@@ -60,7 +60,7 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th class="today-bigger-headings">Task Title</th>
+                        <th class="today-bigger-headings">Task</th>
                         <th class="today-smaller-headings">Type</th>
                     </tr>
                 </thead>
@@ -80,7 +80,6 @@
     const calendarBody = document.querySelector(".task-table-body");
     calendarBody.innerHTML = '';
     calendarBody.innerHTML = htmlText;
-    populateSideNavSetup();
 </script>
 
 
@@ -108,8 +107,6 @@
         navButton.classList.toggle('navButton-open');
         sideNav.classList.toggle('sideNav-open');
     }
-
-
 </script>
 
 <!-- Edit Task Modal Script

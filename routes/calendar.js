@@ -24,7 +24,7 @@ router.get("/", checkAuthentication, async function (req, res) {
     viewedYear: calendarModel.state.viewedYear,
     viewedDays: calendarModel.state.viewedCalendarDays,
     viewedTotalDays: calendarModel.state.viewedDaysInMonth,
-    monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
+    //monthTasks: JSON.stringify(calendarModel.state.calendarTasks),
     htmlText: htmlText,
   });
 });
@@ -201,33 +201,34 @@ const _populateSideNavHtml = function (selectedDay) {
   let htmlText = '';
 
   tasks.forEach((task) => { 
-      if (task.taskStart <= day && day <= task.taskEnd) {
-        let title = '';
-        title = (task.taskTitle.length > 40) ? 
-          title = task.taskTitle.slice(0,40) + '...' :
-          title = task.taskTitle;
+    if (task.taskStart <= day && day <= task.taskEnd) {
+      let title = '';
+      title = (task.taskTitle.length > 40) 
+        ? title = task.taskTitle.slice(0,40) + '...' 
+        : title = task.taskTitle;
 
-        if (task.taskComplete === 0) {
-          htmlText += `<tr class="today-table-row-sidenav">
-                        <td>
-                          <a href="/tasks/${task.taskID}/2" class="edit-modal-sidenav">* ${title}</a>
-                        </td>
-                        <td class="white-divider">
-                          <a href="/tasks/${task.taskID}/2" class="edit-modal-sidenav">${task.typeDescription}</a>
-                        </td>`;
-        } else {
-          htmlText += `<tr class="today-table-row-sidenav-completed">
+      if (task.taskComplete === 0) {
+        htmlText += `<tr class="today-table-row-sidenav">
+          <td>
+            <a href="/tasks/${task.taskID}/2" class="edit-modal-sidenav">* ${title}</a>
+          </td>
+          <td class="white-divider">
+            <a href="/tasks/${task.taskID}/2" class="edit-modal-sidenav">${task.typeDescription}</a>
+          </td>`
+        ;
+      } else {
+        htmlText += `<tr class="today-table-row-sidenav-completed">
           <td>
             <a href="./viewCompleted/${task.taskID}/2" class="edit-completed-modal-sidenav">* ${title}</a>
           </td>
           <td class="white-divider">
             <a href="./viewCompleted/${task.taskID}/2" class="edit-completed-modal-sidenav">${task.typeDescription}</a>
           </td>`;
-        }
       }
-    });
+    }
+  });
 
-    returnData.html = htmlText;
-    return returnData;
-  }
+  returnData.html = htmlText;
+  return returnData;
+}
         

@@ -28,7 +28,8 @@ const _monthList = [
 
 /**
  * Gets the current date and creates an array of the days to populate the calendar.
- * @returns An object with the month, year, last day, and an array of the days to use for the calendar.
+ * Updates the calender state with the current month, year, number of days in the month, 
+ * and an array of the days to use for the calendar.
  */
 const loadCurrentDate = function () {
   const dt = DateTime.local();
@@ -45,7 +46,7 @@ const loadCurrentDate = function () {
  * @param {*} displayedMonth The current month being displayed.
  * @param {*} displayedYear The current year being displayed.
  */
-const previous = function(displayedMonth, displayedYear) {
+const previous = function (displayedMonth, displayedYear) {
   const currentDisplayedMonth = _monthList.findIndex(
     (month) => month === displayedMonth
   );

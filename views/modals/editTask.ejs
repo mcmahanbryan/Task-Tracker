@@ -43,7 +43,7 @@
     </div>
     <div class="modal-footer footer-color no-border">
       <div class="complete-button-padding">
-      <button type="submit" name="complete" class="btn btn-success submit-button">Complete</button>
+      <button type="submit" name="complete" class="btn btn-success edit-submit-button">Complete</button>
       </div>
       <button type="button" class="btn btn-secondary edit-close-button" data-dismiss="modal">Close</button>
       <button type="submit" name="save" class="btn btn-primary edit-submit-button">Save</button>
@@ -69,11 +69,11 @@
       const validationErrors = [];
 
       if (!document.querySelector('.editTaskTitle').value)
-        validationErrors.push(["editTaskTitle", "Please enter a task title"]);
+        validationErrors.push(["editTaskTitle", "Please enter a Task Title"]);
       if (!document.querySelector('.editTaskType').value)
-        validationErrors.push(["editTaskType", "Please select a task type"]);
+        validationErrors.push(["editTaskType", "Please select a Task Type"]);
       if (!document.querySelector('.editStartDate').value)
-        validationErrors.push(["editStartDate", "Please enter a start date"]);
+        validationErrors.push(["editStartDate", "Please enter a Start Date"]);
       if (!document.querySelector('.editEndDate').value)
         validationErrors.push(["editEndDate", "Please enter an End Date"]);
 

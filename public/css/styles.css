@@ -198,7 +198,7 @@ form label.required:after {
 }
 .myInfo-form {
   border: 2px solid rgb(21, 36, 59);
-  max-width: 460px;
+  max-width: 480px;
   padding-left: 21px;
 }
 .navButton {
@@ -240,7 +240,7 @@ form label.required:after {
 }
 
 .right-button {
-  padding: 1rem 0 1rem 20rem;
+  padding: 1rem 0 1rem 21rem;
 }
 
 .reg-error {
@@ -286,6 +286,7 @@ form label.required:after {
   height: 25px;
   border: 2px solid;
   text-align: left;
+  padding-left: 3px;
 }
 
 .task-table th {
@@ -299,6 +300,7 @@ form label.required:after {
   border-color: black;
   top: 0;
   z-index: 2;
+  padding-left: 3px;
 }
 
 .task-table tr:nth-child(odd) td {

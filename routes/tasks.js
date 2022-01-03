@@ -154,6 +154,7 @@ router.post("/submitUpdatedTask", checkAuthentication, async function (req, res)
 
     const paginationPage = taskModel.state.paginationPage;
     const taskPaginationArray = pagination.createPaginationArray(taskModel.state.tasks);
+    
     responseData.tableHtml = _generateHtml(taskPaginationArray[taskModel.state.paginationPage - 1]);
     responseData.paginationHtml = pagination.generatePaginationHtml(taskPaginationArray, paginationPage);
     responseData.paginationCountHtml = pagination.generatePaginationCountHtml(taskPaginationArray, paginationPage);
