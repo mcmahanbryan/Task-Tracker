@@ -44,7 +44,7 @@
 
 
 <!-- Populates the table body with today's tasks
- -------------------------------------------------->
+-------------------------------------------------->
  <script>
   const htmlText = `<%- htmlText %>`;
   const taskTable = document.querySelector('.task-table-body');
@@ -54,7 +54,7 @@
 
 
 <!-- Edit Task Modal 
-    -------------------------------------------------->
+-------------------------------------------------->
 <div
   id="editTaskModal"
   class="modal fade"
@@ -77,7 +77,7 @@
 </script>
 
 <!-- Weather API
-  -------------------------------------------------->
+-------------------------------------------------->
 <script>
   const weatherDisplay = document.querySelector(".weather-display");
   const locationInput = document.querySelector(".weather-txt-area");
@@ -90,6 +90,8 @@
   })
 
   const getWeather = function() {
+    weatherDisplay.innerHTML = "";
+    
     if (!locationInput.value.includes(",")) {
       const errorText = document.createElement('p');
       errorText.style.color = "darkred";
@@ -105,14 +107,14 @@
     const weatherData = { 'weatherLocation': `${city},US-${state}` };
 
     $.ajax({
-    type:"POST",
-    url: "/weather/",
-    data: weatherData,
-    dataType: "json",
-    success: function (result) {
-      weatherDisplay.innerHTML = result.weatherHtml;
-      locationInput.value = "";
-    }
+      type:"POST",
+      url: "/weather/",
+      data: weatherData,
+      dataType: "json",
+      success: function (result) {
+        weatherDisplay.innerHTML = result.weatherHtml;
+        locationInput.value = "";
+      }
     });
   }
 </script>

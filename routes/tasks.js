@@ -5,7 +5,6 @@ const taskModel = require("../models/task");
 const taskTypeModel = require("../models/task-type");
 const dateFormat = require("../js/date-format");
 const pagination = require("../js/pagination");
-const task = require("../data/task");
 
 
 /* Tasks GET

@@ -98,15 +98,12 @@ const generatePaginationHtml = function (paginationArray, paginationPage) {
    */
   const generatePaginationCountHtml = function (paginationArray, paginationPage) {
     const itemsPerPage = process.env.PAGINATION_ITEMS_PER_PAGE;
-
-    const tableCountMax = (itemsPerPage * (paginationArray.length - 1)) 
-      + paginationArray[paginationArray.length - 1].length;
+    const tableCountMax = paginationArray.flat().length;
 
     const tableCountBegin = (itemsPerPage * (paginationPage - 1)) + 1;
     const tableCountEnd = (paginationArray.length === 1)
       ? paginationArray[0].length
-      : (itemsPerPage * (paginationPage - 1)) + paginationArray[paginationPage - 1].length;  
-
+      : (itemsPerPage * (paginationPage - 1)) + paginationArray[--paginationPage].length;  
 
     return `<p class="pagination-count">${tableCountBegin} - ${tableCountEnd} of ${tableCountMax} items</p>`;
   }

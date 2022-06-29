@@ -8,7 +8,7 @@ function checkAuthentication(req, res, next) {
   }
 }
 
-// Checks if the user is signed in or not. If they are and they to
+// Checks if the user is signed in or not. If they are and they
 // go to the login or register page, we redirect them to the home page.
 function checkNoAuthentication(req, res, next) {
   if (req.isAuthenticated()) {
